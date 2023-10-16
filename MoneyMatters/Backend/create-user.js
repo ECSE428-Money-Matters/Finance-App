@@ -52,7 +52,7 @@ app.post('/create-User', async (req, res) => {
   transporter.sendMail(mailOptions, (error, info) => {
     if (error) {
         console.error(error);
-        return res.status(500).json({error: 'Email could not be sent. Please recheck entered email address.'});
+        return res.status(500).json({error: 'Email could not be sent.'});
     }
     console.log(`Email sent successfully. ${info.response}`);
 });
@@ -65,6 +65,7 @@ app.post('/verify-Email', async (req, res) => {
         return res.status(400).json({ error: 'Invalid verification code'});
     }
 
+    //  TODO: how to get userData here?
     // Create the user in the database
     const newUser = await db.createUser(userData);
 
