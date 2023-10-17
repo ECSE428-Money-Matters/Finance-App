@@ -24,6 +24,6 @@ CREATE TABLE accountrecovery(
     email VARCHAR(255),
     username VARCHAR(255),
     code UUID DEFAULT gen_random_uuid(),
-    creationDate DATE DEFAULT CURRENT_DATE,
+    creationDate timestamp DEFAULT NOW(),
     attempts int DEFAULT 3
 );
