@@ -9,13 +9,13 @@ const AppNavigator = () => {
   return (
     <Stack.Navigator initialRouteName="SignUp">
       <Stack.Screen
-        name="SignUp" // Define Screen Name Here
-        component={SignUpPage}
+        name="SignIn"
+        component={SignInPage}
         options={{ headerShown: false }}
       />
       <Stack.Screen
-        name="SignIn"
-        component={SignInPage}
+        name="SignUp"
+        component={SignUpPage}
         options={{ headerShown: false }}
       />
     </Stack.Navigator>
