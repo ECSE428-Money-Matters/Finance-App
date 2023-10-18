@@ -89,7 +89,8 @@ app.post("/recover/setpassword", async (req, res) => {
             nbattempts--;
             await pool.query("UPDATE AccountRecovery SET attempts = $1 WHERE accountrecoveryid = $2",
             [nbattempts,recid])
-            return await res.json("Error, wrong code").redirect('http://127.0.0.1:3000/recover/setpassword');
+            if (nbattempts == 0) return await res.json("Error, wrong code. No more attemps accepted for this request");
+            return await res.json("Error, wrong code. "+nbattempts + " attempts left.")
         }
         //Update password
         const usernameraw = await pool.query("SELECT username FROM AccountRecovery WHERE AccountRecoveryId = $1",
@@ -113,7 +114,7 @@ app.listen(3000, () => {
     console.log("Server started on port 3000");
 });
 
-//Refresh database, clear all expired requests or with no attempts 
+//Refresh account recovery database, clear all expired requests or with no attempts 
 refresh = () => {
     var datetime = new Date().subHours(1);
     var threshold = 0
@@ -136,14 +137,14 @@ Date.prototype.subHours = function (h) {
 
 
 
-//Rudimentary testing
-//Database populating
+// Rudimentary testing
+// Database populating
 // pool.query('INSERT INTO account (username,email,password) VALUES($1,$2,$3) ON CONFLICT DO NOTHING',
 // ["qi","qi.chen6@mcgill.ca","password"]);
 // pool.query('INSERT INTO account (username,email,password) VALUES($1,$2,$3) ON CONFLICT DO NOTHING',
 // ["qiCCC","qiyuanchen@outlook.com","passwordsafe"]);
 
-//Create recovery request
+// Create recovery request
 // superagent.post('http://127.0.0.1:3000/recover').send({username: "qiCCC"}).end((err, res) => {
 //     if(err){
 //         console.log("Post error = ", err )
@@ -152,7 +153,7 @@ Date.prototype.subHours = function (h) {
 //         console.log(res.body);
 //     }
 //   });
-  //Solve recovery request
+//   Solve recovery request
 //   superagent.post('http://127.0.0.1:3000/recover/setpassword').send({code:'b55af879-23a4-430d-92a8-44c5a90b5c9a', password: 'newpass',accountrecoveryid: 'd9672d2d-886d-49ee-9489-54eff608fa8a'}).end((err, res) => {
 //     if(err){
 //         console.log("Put error = ", err )
