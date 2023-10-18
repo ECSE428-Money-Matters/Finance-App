@@ -1,74 +1,111 @@
-const express = require("express");
+// Step 0: Set up the necessary imports and initial configurations:
+require('dotenv').config();
+
+const nodemailer = require('nodemailer');
+const express = require('express');
+const cors = require('cors');
+const pool = require('./db');  // Assuming you've a 'db.js' for database operations
+
 const app = express();
-const cors = require("cors");
-const pool = require("./db");
-const {rows} = require("pg/lib/defaults");
-const crypto = require('crypto');
-const nodemailer = require("nodemailer");
-
-
-// admin account used to send verification email to user
-// TODO: fix
-const transporter = nodemailer.createTransport({
-    service: 'Gmail',
-    auth: {
-        user: 'money-matters@gmail.com',
-        pass: '123456789',
-    },
-});
 
 // Middleware
 app.use(cors());
 app.use(express.json());
 
-const db = require('./database'); // Replace with your database setup
 
-app.post('/create-User', async (req, res) => {
-  const userData = req.body;
+// Step 1: Setup a mailer using Google OAuth
+// Setup nodemailer transporter
 
-  // Validate input (e.g., username and password)
-  if (!userData.username || !userData.password) {
-    return res.status(400).json({ error: 'Username and password are required' });
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    type: "OAuth2",
+    user: process.env.GMAIL_USER,
+    clientId: process.env.CLIENT_ID,
+    clientSecret: process.env.CLIENT_SECRET,
+    refreshToken: process.env.REFRESH_TOKEN
   }
+});
 
-  // Check if the user already exists
-  const existingUser = await db.getUserByUsername(userData.username);
-  if (existingUser) {
-    return res.status(400).json({ error: 'User already exists' });
+
+// A function to send emails
+async function sendVerificationEmail(toEmail, code) {
+  try {
+    await transporter.sendMail({
+      from: 'YOUR_GMAIL_ADDRESS',
+      to: toEmail,
+      subject: 'Verification Code for MoneyMatters',
+      text: `Your verification code is: ${code}`
+    });
+    console.log('Verification email sent');
+  } catch (error) {
+    console.error('Error sending verification email:', error);
   }
+}
 
-  // generate a random code
-  const verif_Code = crypto.randomBytes(6).toString('hex');
+// Step 2: Implement the user account creation process
+// Create the endpoint to handle user registration:
+const verificationCodes = {};  // Temporary storage for verification codes
 
-  // create mail object that will be sent
-  const mailOptions = {
-      from: 'money-matters@gmail.com',  // Sender's email address
-      to: userData.email,    // Recipient's email address
-      subject: 'Email Verification Code',
-      text: `Your verification code is: ${verif_Code}`,  // Replace with the actual verification code
-    };
+app.post('/register', async (req, res) => {
+  try {
+    const { email, username, password } = req.body;
 
-    // send the mail
-  transporter.sendMail(mailOptions, (error, info) => {
-    if (error) {
-        console.error(error);
-        return res.status(500).json({error: 'Email could not be sent.'});
-    }
-    console.log(`Email sent successfully. ${info.response}`);
-});
-  
-});
-app.post('/verify-Email', async (req, res) => {
-    const {entered_verif_code} = req.body;
-  
-    if (entered_verif_code != verif_Code) {
-        return res.status(400).json({ error: 'Invalid verification code'});
+    // Validate if any field is empty
+    if (!email || !username || !password) {
+      return res.status(400).json({ error: 'All fields are required' });
     }
 
-    //  TODO: how to get userData here?
-    // Create the user in the database
-    const newUser = await db.createUser(userData);
+    // TODO: Check for existing username here
 
-    res.json({ message: 'User account created successfully', user: newUser });
+    // Generate a 6-digit verification code
+    const code = Math.floor(100000 + Math.random() * 900000);
+    verificationCodes[email] = code;
 
-  });
+    // Send the verification email
+    await sendVerificationEmail(email, code);
+
+    res.json({ message: 'Verification code sent to email. Please verify to complete registration.' });
+
+  } catch (error) {
+    console.error('Error in registration:', error);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// Create an endpoint to handle the verification code submission:
+app.post('/verify', async (req, res) => {
+  try {
+    const { email, code } = req.body;
+
+    if (verificationCodes[email] === Number(code)) {
+      // TODO: Store user details in the database here after hashing the password
+
+      // Clear the verification code
+      delete verificationCodes[email];
+      res.json({ message: 'Account created successfully!' });
+      console.log(`User with email ${email} was successfully created!`);
+    } else {
+      res.status(400).json({ error: 'Invalid verification code' });
+    }
+
+  } catch (error) {
+    console.error('Error in verification:', error);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// API endpoint to Get all Users for testing purposes
+app.get("/users", async (req, res) => {
+  try {
+      const allUsers = await pool.query("SELECT * FROM users");
+      res.json(allUsers.rows);
+  } catch (err) {
+      console.error(err.message);
+  }
+});
+
+
+app.listen(3000, () => {
+  console.log('Server started on port 3000');
+});
