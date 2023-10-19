@@ -26,7 +26,7 @@ app.post("/recover", async (req,res) => {
         const exists = await pool.query("SELECT * FROM Account WHERE username = $1",
         [username]
         );
-        if (exists.rows[0] === undefined) return res.json("Account not found");
+        if (exists.rows[0] === undefined) return res.status(404).json("Account not found");
 
         //Delete duplicate if exists (not implemented)
         //await pool.query("DELETE from AccountRecovery WHERE email = $1",[email]);
@@ -42,7 +42,10 @@ app.post("/recover", async (req,res) => {
         const code = newRecoveryRequest.rows[0].code;
         const recId = newRecoveryRequest.rows[0].accountrecoveryid;
         const creationdate = newRecoveryRequest.rows[0].creationdate;
-        var message = "Account recovery id: " + recId + "\nCode: " + code+"\nThe request is valid for 1 hour from "+creationdate+".";
+        const host = req.get("host");
+        var message = "<html><body><p>Account recovery id: " + recId + "<br>Code: " + code+"<br>The request is valid for 1 hour from "+creationdate+"."+
+        '<br><a href="' + "http://" + host + "/recover/setpassword/" + recId + '">Click here to reset your password</a>';
+        //console.log(message);
         //Mailer functions
         
         nodeoutlook.sendEmail({
@@ -53,7 +56,7 @@ app.post("/recover", async (req,res) => {
             from: 'moneymattershere@outlook.com',
             to: email,
             subject: 'Your recovery code for Finance App',
-            text: message,
+            html: message,
             onError: (e) => console.log(e),
             onSuccess: (i) => console.log(i)
         }
@@ -66,31 +69,34 @@ app.post("/recover", async (req,res) => {
 });
 
 //Recover an account's password
-app.post("/recover/setpassword", async (req, res) => {
+app.put("/recover/setpassword/:recid", async (req, res) => {
     try {
         
         refresh();
         const description = req.body;
 
-        const recid = description.accountrecoveryid;
+        const recid = req.params.recid;
         //console.log(recid)
         const exists = await pool.query("SELECT * FROM accountrecovery WHERE accountrecoveryid = $1",
         [recid]
         );
-        if (exists.rows[0] === undefined) return res.json("Account Recovery Request not found");
+        if (exists.rows[0] === undefined) return res.status(404).json("Account Recovery Request not found");
 
         const code = description.code;
         const password = description.password;
         
         if (exists.rows[0].code != code) {
+            refresh();
             var attempts = await pool.query("SELECT attempts FROM AccountRecovery WHERE accountrecoveryid = $1",
             [recid]);
             var nbattempts = attempts.rows[0].attempts;
             nbattempts--;
             await pool.query("UPDATE AccountRecovery SET attempts = $1 WHERE accountrecoveryid = $2",
             [nbattempts,recid])
-            if (nbattempts == 0) return await res.json("Error, wrong code. No more attemps accepted for this request");
-            return await res.json("Error, wrong code. "+nbattempts + " attempts left.")
+            if (nbattempts == 0) {
+                return res.json("Error, wrong code. No more attemps accepted for this request");
+            }
+            return res.status(400).json("Error, wrong code. "+nbattempts + " attempts left.")
         }
         //Update password
         const usernameraw = await pool.query("SELECT username FROM AccountRecovery WHERE AccountRecoveryId = $1",
@@ -119,7 +125,7 @@ refresh = () => {
     var datetime = new Date().subHours(1);
     var threshold = 0
     var database = pool.query(
-        "DELETE FROM AccountRecovery WHERE creationDate<$1 OR attempts<$2",
+        "DELETE FROM AccountRecovery WHERE creationDate<$1 OR attempts=$2",
         [datetime,threshold]
     );
 
@@ -154,7 +160,7 @@ Date.prototype.subHours = function (h) {
 //     }
 //   });
 //   Solve recovery request
-//   superagent.post('http://127.0.0.1:3000/recover/setpassword').send({code:'b55af879-23a4-430d-92a8-44c5a90b5c9a', password: 'newpass',accountrecoveryid: 'd9672d2d-886d-49ee-9489-54eff608fa8a'}).end((err, res) => {
+//   superagent.put('http://127.0.0.1:3000/recover/setpassword/15e773cf-5caa-46c6-b5d3-e375cb67e394').send({code:'c5d16b01-4702-4f2c-b174-44724bd265a3', password: 'newpass'}).end((err, res) => {
 //     if(err){
 //         console.log("Put error = ", err )
 //     } else {
