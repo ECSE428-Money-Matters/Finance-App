@@ -4,7 +4,10 @@ require('dotenv').config();
 const nodemailer = require('nodemailer');
 const express = require('express');
 const cors = require('cors');
-const pool = require('./db');  // Assuming you've a 'db.js' for database operations
+const pool = require('./db');
+
+// Uncomment when ready to use hashedPassword
+// const bcrypt = require('bcrypt');
 
 const app = express();
 
@@ -32,7 +35,7 @@ const transporter = nodemailer.createTransport({
 async function sendVerificationEmail(toEmail, code) {
   try {
     await transporter.sendMail({
-      from: 'YOUR_GMAIL_ADDRESS',
+      from: 'noreply.moneymatters@gmail.com',
       to: toEmail,
       subject: 'Verification Code for MoneyMatters',
       text: `Your verification code is: ${code}`
@@ -45,7 +48,7 @@ async function sendVerificationEmail(toEmail, code) {
 
 // Step 2: Implement the user account creation process
 // Create the endpoint to handle user registration:
-const verificationCodes = {};  // Temporary storage for verification codes
+const verificationData = {};  // Temporary storage for verification codes and password
 
 app.post('/register', async (req, res) => {
   try {
@@ -56,11 +59,18 @@ app.post('/register', async (req, res) => {
       return res.status(400).json({ error: 'All fields are required' });
     }
 
-    // TODO: Check for existing username here
+    // TODO: Check for existing user here
+    // Check for existing email
+    const emailExists = await pool.query("SELECT * FROM users WHERE email = $1", [email]);
+    if (emailExists.rows.length > 0) {
+      console.log(`Error: Email ${email} already exists!`);
+      return res.status(400).json({ error: 'Email already exists' });
+    }
 
+    // If the email does not exist, then proceed
     // Generate a 6-digit verification code
     const code = Math.floor(100000 + Math.random() * 900000);
-    verificationCodes[email] = code;
+    verificationData[email] = { code, username, password };
 
     // Send the verification email
     await sendVerificationEmail(email, code);
@@ -78,11 +88,20 @@ app.post('/verify', async (req, res) => {
   try {
     const { email, code } = req.body;
 
-    if (verificationCodes[email] === Number(code)) {
-      // TODO: Store user details in the database here after hashing the password
+    if (verificationData[email] && verificationData[email].code === Number(code)) {
+      // const passwordToHash = verificationData[email].password;         // Uncomment when ready to use hashedPassword
+      const username = verificationData[email].username;
+      const password = verificationData[email].password;                  // Comment when ready to use hashedPassword
+      // const hashedPassword = await bcrypt.hash(passwordToHash, 10);    // Uncomment when ready to use hashedPassword
+      
+      // Store user details in the database here after hashing the password
+      const result = await pool.query("INSERT INTO users (email, username, hashed_password) VALUES($1, $2, $3) RETURNING *", [email, username, password]);    // Change to hashedPassword when ready to use.
+      if (result.rows.length > 0) {
+        console.log(`User with email ${email} was successfully created in the database!`);
+      }
 
       // Clear the verification code
-      delete verificationCodes[email];
+      delete verificationData[email];
       res.json({ message: 'Account created successfully!' });
       console.log(`User with email ${email} was successfully created!`);
     } else {
