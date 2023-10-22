@@ -2,6 +2,7 @@ import React from "react";
 import { createStackNavigator } from "@react-navigation/stack";
 import SignInPage from "../pages/SignInPage";
 import SignUpPage from "../pages/SignUpPage";
+import PasswordRecovery from "../pages/PasswordRecovery";
 
 const Stack = createStackNavigator();
 
@@ -18,6 +19,11 @@ const AppNavigator = () => {
         component={SignUpPage}
         options={{ headerShown: false }}
       />
+      <Stack.Screen
+        name="PasswordRecovery"
+        component={PasswordRecovery}
+        options={{headerShown: false }}
+        />
     </Stack.Navigator>
   );
 };

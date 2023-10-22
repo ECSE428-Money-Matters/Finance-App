@@ -39,6 +39,10 @@ const SignInPage = ({ navigation }) => {
     navigation.navigate('SignUp');
   };
 
+  const handlePasswordRecoveryRedirect = () => {
+    navigation.navigate('PasswordRecovery');
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.label}>Email:</Text>
@@ -65,6 +69,11 @@ const SignInPage = ({ navigation }) => {
       <Text style={styles.linkText} onPress={handleSignUpRedirect}>   {/* <-- New "Sign Up" link */}
         Don't have an account? Sign Up
       </Text>
+
+      <Text style={styles.linkText} onPress={handlePasswordRecoveryRedirect}>
+        Forgot Password?
+      </Text>
+      
     </View>
   );
 };
