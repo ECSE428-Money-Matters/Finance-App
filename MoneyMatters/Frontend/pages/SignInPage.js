@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, TextInput, Button, Text } from 'react-native';
 
-const SignInPage = ({ navigation }) => {  // <-- Added navigation prop
+const SignInPage = ({ navigation }) => {  
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
@@ -22,10 +22,10 @@ const SignInPage = ({ navigation }) => {  // <-- Added navigation prop
   
       if (message === "Login successful") {
         // handle successful login, e.g., navigate to a dashboard
-        navigation.navigate('Dashboard');  // Assuming you have a 'Dashboard' route
+        navigation.navigate('Dashboard');  
       } else {
         // handle unsuccessful login, e.g., display an error message
-        alert(message);  // This will show the message sent from the backend
+        alert(message);  
       }
     } catch (error) {
       // handle error, e.g., network error or server error
@@ -35,7 +35,7 @@ const SignInPage = ({ navigation }) => {  // <-- Added navigation prop
   };
   
 
-  const handleSignUpRedirect = () => {   // <-- New function for redirecting
+  const handleSignUpRedirect = () => {   
     navigation.navigate('SignUp');
   };
 
