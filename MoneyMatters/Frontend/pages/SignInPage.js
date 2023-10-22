@@ -5,10 +5,35 @@ const SignInPage = ({ navigation }) => {  // <-- Added navigation prop
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleSignIn = () => {
-    console.log('Email:', email);
-    console.log('Password:', password);
+  const handleSignIn = async () => {
+    try {
+      const response = await fetch('http://192.168.2.20:3000/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          username: email,   
+          password: password
+        })
+      });
+      
+      const message = await response.text();
+  
+      if (message === "Login successful") {
+        // handle successful login, e.g., navigate to a dashboard
+        navigation.navigate('Dashboard');  // Assuming you have a 'Dashboard' route
+      } else {
+        // handle unsuccessful login, e.g., display an error message
+        alert(message);  // This will show the message sent from the backend
+      }
+    } catch (error) {
+      // handle error, e.g., network error or server error
+      console.error("Error during sign in:", error);
+      alert("Failed to connect to the server.");
+    }
   };
+  
 
   const handleSignUpRedirect = () => {   // <-- New function for redirecting
     navigation.navigate('SignUp');
