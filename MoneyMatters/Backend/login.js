@@ -1,6 +1,10 @@
 const loginAttempts = {};
+const express = require("express");
+const router = express.Router();
+const pool = require("./db");
+const app = require('./index.js');
 
-app.post("/login", async (req, res) => {
+router.post("/login", async (req, res) => {
     try {
         const { username, password } = req.body;
 
@@ -8,13 +12,15 @@ app.post("/login", async (req, res) => {
             return res.json("Too many login attempts. Select 'Forgot Password' to proceed.");
         }
 
-        const user = await pool.query("SELECT * FROM Account WHERE username = $1", [username]);
+        const user = await pool.query("SELECT * FROM users WHERE username = $1", [username]);
 
         if (user.rows.length === 0) {
             return res.json("Username not found");
         }
 
-        if (user.rows[0].password !== password) {
+        console.log(user.rows[0]);
+
+        if (user.rows[0].hashed_password !== password) {
             loginAttempts[username] = (loginAttempts[username] || 0) + 1;
             return res.json("Invalid password");
         }
@@ -29,7 +35,9 @@ app.post("/login", async (req, res) => {
     }
 });
 
-app.post("/logout", (req, res) => {
+router.post("/logout", (req, res) => {
     // Not much to do here
     res.json("Logout successful");
 });
+
+module.exports = router;
