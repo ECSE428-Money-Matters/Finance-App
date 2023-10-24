@@ -6,37 +6,40 @@ const SignUpPage = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleSignUp = () => {
-     // For now, we'll just log the entered details. In a real application, you'd handle account creation here.
-    // console.log('Full Name:', fullName);
-    // console.log('Email:', email);
-    // console.log('Password:', password);
-    const user = {
-      fullName,
-      email,
-      password,
+  const handleSignUp = async () => {
+    try {
+      const response = await fetch('http://10.121.223.144:3000/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          fullName: fullName,
+          username: email,   
+          password: password
+        })
+      });
+      const message = await response.text();
+      if (message === "Login successful") {
+        // handle successful login, e.g., navigate to a dashboard
+        navigation.navigate('SignIn');  
+      } else {
+        // handle unsuccessful login, e.g., display an error message
+        alert(message);  
+      }
+    } catch (error) {
+      // handle error, e.g., network error or server error
+      console.error("Error during sign in:", error);
+      alert("Failed to connect to the server.");
     }
-    fetch('http://127.0.0.1:3000/register',{
-      method:'POST',
-      headers:{
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(user),
-    }).then(resopnse => response.json()).then(data => {
-      console.log('Registration successful', data);
-      navigation.navigate('SignIn');
-    })
-    .catch(error => {
-      console.error('Registration failed', error);
-    });
   };
+
 
   const handleSignInRedirect = () => {
     navigation.navigate('SignIn');
   };
   
   return (
-
     <View style={styles.container}>
       <Text style={styles.title}>Welcome to MoneyMatters</Text>
       <Text style={styles.label}>Full Name:</Text>
