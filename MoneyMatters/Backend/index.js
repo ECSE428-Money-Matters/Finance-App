@@ -3,6 +3,7 @@ const app = express();
 const cors = require("cors");
 const pool = require("./db");
 const {rows} = require("pg/lib/defaults");
+const loginAttempts = {};
 
 const create_user = require('./create-user');
 const login = require('./login.js');

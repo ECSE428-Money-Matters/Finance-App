@@ -1,16 +1,105 @@
-import React from "react";
+import React, { useState } from 'react';
+import { View, StyleSheet, TextInput, Button, Text } from 'react-native';
 
-const SignInPage = () => (
-  <View style={styles.container}>
-   
-  </View>
-);
+const SignInPage = ({ navigation }) => {  
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const handleSignIn = async () => {
+    try {
+      const response = await fetch('http://127.0.0.1:3000/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          username: email,   
+          password: password
+        })
+      });
+      
+      const message = await response.text();
+  
+      if (message === "Login successful") {
+        // handle successful login, e.g., navigate to a dashboard
+        navigation.navigate('Dashboard');  
+      } else {
+        // handle unsuccessful login, e.g., display an error message
+        alert(message);  
+      }
+    } catch (error) {
+      // handle error, e.g., network error or server error
+      console.error("Error during sign in:", error);
+      alert("Failed to connect to the server.");
+    }
+  };
+  
+
+  const handleSignUpRedirect = () => {   
+    navigation.navigate('SignUp');
+  };
+
+  const handlePasswordRecoveryRedirect = () => {
+    navigation.navigate('PasswordRecovery');
+  };
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.label}>Email:</Text>
+      <TextInput 
+        style={styles.input} 
+        value={email}
+        onChangeText={setEmail}
+        placeholder="Enter your email"
+        keyboardType="email-address"
+        autoCapitalize="none"
+      />
+      
+      <Text style={styles.label}>Password:</Text>
+      <TextInput 
+        style={styles.input} 
+        value={password}
+        onChangeText={setPassword}
+        placeholder="Enter your password"
+        secureTextEntry={true}
+      />
+
+      <Button title="Sign In" onPress={handleSignIn} />
+
+      <Text style={styles.linkText} onPress={handleSignUpRedirect}>   {/* <-- New "Sign Up" link */}
+        Don't have an account? Sign Up
+      </Text>
+
+      <Text style={styles.linkText} onPress={handlePasswordRecoveryRedirect}>
+        Forgot Password?
+      </Text>
+      
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
-    width: 150,
+    flex: 1,
+    justifyContent: 'center',
+    paddingHorizontal: 15,
+  },
+  label: {
+    fontSize: 16,
+    marginBottom: 8,
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    padding: 8,
     marginBottom: 15,
-    marginHorizontal: 8,
+    borderRadius: 5,
+  },
+  linkText: {   // <-- New style for "Sign Up" link
+    color: 'blue',
+    textAlign: 'center',
+    marginTop: 10,
+    textDecorationLine: 'underline',
   },
 });
 
