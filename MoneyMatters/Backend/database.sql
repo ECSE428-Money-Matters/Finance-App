@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS users(
     user_id SERIAL PRIMARY KEY,
     email VARCHAR(255) UNIQUE NOT NULL,
     username VARCHAR(255) NOT NULL,
-    hashed_password CHAR(60) NOT NULL
+    hashed_password VARCHAR(60) NOT NULL
 );
 
 CREATE TABLE accountrecovery(
