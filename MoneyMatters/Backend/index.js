@@ -25,6 +25,15 @@ app.use((req, res, next) => {
 // ROUTES
 app.use(create_user)
 
+const login = require('./login.js')
+
+app.use(login);
+
+app.use((req, res, next) => {
+    console.log(`Received ${req.method} request on ${req.path}`);
+    next();
+});
+
 // Create an example
 app.post("/examples", async (req,res) => {
     try {
