@@ -4,11 +4,26 @@ const cors = require("cors");
 const pool = require("./db");
 const {rows} = require("pg/lib/defaults");
 
+const create_user = require('./create-user')
+
 // Middleware
 app.use(cors());
 app.use(express.json());
 
+if (require.main === module) {
+    app.listen(3000, () => {
+        console.log("Server started on port 3000");
+    });
+}
+
+app.use((req, res, next) => {
+    console.log(`Received ${req.method} request on ${req.path}`);
+    next();
+});
+
+
 // ROUTES
+app.use(create_user)
 
 // Create an example
 app.post("/examples", async (req,res) => {
@@ -48,32 +63,31 @@ app.get("/examples/:id", async (req, res) =>{
 // Update an example
 
 app.put("/examples/:id", async (req, res) => {
-   try {
-       const {id} = req.params;
-       const {description} = req.body;
-       const updateExample = await pool.query(
-           "UPDATE exampletable SET description = $1 WHERE example_id = $2",
-           [description, id]
-           );
-       res.json("Example was updated");
-   } catch (err) {
-       console.error(err.message);
-   }
+    try {
+        const {id} = req.params;
+        const {description} = req.body;
+        const updateExample = await pool.query(
+            "UPDATE exampletable SET description = $1 WHERE example_id = $2",
+            [description, id]
+        );
+        res.json("Example was updated");
+    } catch (err) {
+        console.error(err.message);
+    }
 });
 
 // Delete an example
 app.delete("/examples/:id", async (req, res) =>{
-   try {
-     const {id} = req.params;
-     const deleteExample = await pool.query(
-         "DELETE FROM exampletable WHERE example_id = $1",
-         [id]
-         );
-     res.json("Example was deleted");
-   } catch (err) {
-       console.error(err.message);
-   }
+    try {
+        const {id} = req.params;
+        const deleteExample = await pool.query(
+            "DELETE FROM exampletable WHERE example_id = $1",
+            [id]
+        );
+        res.json("Example was deleted");
+    } catch (err) {
+        console.error(err.message);
+    }
 });
-app.listen(3000, () => {
-    console.log("Server started on port 3000");
-});
+
+module.exports = app;

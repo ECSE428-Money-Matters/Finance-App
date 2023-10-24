@@ -2,11 +2,17 @@ CREATE DATABASE MoneyMatters;
 
 -- To Create a table:
 
-CREATE TABLE account(
-    username VARCHAR(255) PRIMARY KEY,
-    email VARCHAR(255),
-    password VARCHAR(255)
+CREATE TABLE IF NOT EXISTS exampletable(
+    example_id SERIAL PRIMARY KEY,
+    description VARCHAR(255) -- Text field of max 255 characters
+);
 
+-- Users Table:
+CREATE TABLE IF NOT EXISTS users(
+    user_id SERIAL PRIMARY KEY,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    username VARCHAR(255) NOT NULL,
+    hashed_password CHAR(60) NOT NULL
 );
 
 CREATE TABLE accountrecovery(
@@ -26,3 +32,4 @@ GRANT TEMPORARY, CONNECT ON DATABASE "MoneyMatters" TO PUBLIC;
 GRANT ALL ON DATABASE "MoneyMatters" TO postgres;
 
 GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO "MoneyMatters";
+
