@@ -7,10 +7,28 @@ const SignUpPage = ({ navigation }) => {
   const [password, setPassword] = useState('');
 
   const handleSignUp = () => {
-    // For now, we'll just log the entered details. In a real application, you'd handle account creation here.
-    console.log('Full Name:', fullName);
-    console.log('Email:', email);
-    console.log('Password:', password);
+     // For now, we'll just log the entered details. In a real application, you'd handle account creation here.
+    // console.log('Full Name:', fullName);
+    // console.log('Email:', email);
+    // console.log('Password:', password);
+    const user = {
+      fullName,
+      email,
+      password,
+    }
+    fetch('http://127.0.0.1:3000/register',{
+      method:'POST',
+      headers:{
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(user),
+    }).then(resopnse => response.json()).then(data => {
+      console.log('Registration successful', data);
+      navigation.navigate('SignIn');
+    })
+    .catch(error => {
+      console.error('Registration failed', error);
+    });
   };
 
   const handleSignInRedirect = () => {
@@ -18,9 +36,7 @@ const SignUpPage = ({ navigation }) => {
   };
   
   return (
-    
-  
-      
+
     <View style={styles.container}>
       <Text style={styles.title}>Welcome to MoneyMatters</Text>
       <Text style={styles.label}>Full Name:</Text>
