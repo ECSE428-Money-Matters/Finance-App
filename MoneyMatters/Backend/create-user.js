@@ -5,16 +5,14 @@ const nodemailer = require('nodemailer');
 const express = require('express');
 const cors = require('cors');
 const pool = require('./db');
+const router = express.Router();
 
 // Uncomment when ready to use hashedPassword
 // const bcrypt = require('bcrypt');
 
-const app = express();
-
 // Middleware
-app.use(cors());
-app.use(express.json());
-
+router.use(cors());
+router.use(express.json());
 
 // Step 1: Setup a mailer using Google OAuth
 // Setup nodemailer transporter
@@ -50,7 +48,8 @@ async function sendVerificationEmail(toEmail, code) {
 // Create the endpoint to handle user registration:
 const verificationData = {};  // Temporary storage for verification codes and password
 
-app.post('/register', async (req, res) => {
+router.post('/register', async (req, res) => {
+  console.log("IN REGISTER");
   try {
     const { email, username, password } = req.body;
 
@@ -84,7 +83,7 @@ app.post('/register', async (req, res) => {
 });
 
 // Create an endpoint to handle the verification code submission:
-app.post('/verify', async (req, res) => {
+router.post('/verify', async (req, res) => {
   try {
     const { email, code } = req.body;
 
@@ -115,7 +114,7 @@ app.post('/verify', async (req, res) => {
 });
 
 // API endpoint to Get all Users for testing purposes
-app.get("/users", async (req, res) => {
+router.get("/users", async (req, res) => {
   try {
       const allUsers = await pool.query("SELECT * FROM users");
       res.json(allUsers.rows);
@@ -125,6 +124,4 @@ app.get("/users", async (req, res) => {
 });
 
 
-app.listen(3000, () => {
-  console.log('Server started on port 3000');
-});
+module.exports = router;
