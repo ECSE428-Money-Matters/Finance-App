@@ -6,7 +6,7 @@ const PasswordRecovery = ({ navigation }) => {
 
   const handlePasswordRecovery = async () => {
     try {
-      const url = "http://" + "10.121.154.92:3000" + "/recover";
+      const url = "http://" + window.location.hostname + "/recover";
       const response = await fetch(url, {
         method: "POST",
         headers: {
