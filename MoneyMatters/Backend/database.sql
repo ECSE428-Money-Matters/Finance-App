@@ -24,6 +24,16 @@ CREATE TABLE accountrecovery(
     attempts int DEFAULT 3
 );
 
+CREATE TABLE IF NOT EXISTS expenses(
+    expense_id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    expense_name VARCHAR(255) NOT NULL,
+    user_id UUID NOT NULL,
+    amount NUMERIC(10, 2) NOT NULL,
+    posted_date DATE NOT NULL,
+    category VARCHAR(255) NOT NULL,
+    optional_description VARCHAR(255)
+);
+
 -- Permissions Grants, must be last for permissions to be granted to every newly created tables
 GRANT ALL ON DATABASE "MoneyMatters" TO "MoneyMatters";
 
