@@ -7,7 +7,7 @@ const SignInPage = ({ navigation }) => {
 
   const handleSignIn = async () => {
     try {
-      const response = await fetch('http://192.168.2.20:3000/login', {
+      const response = await fetch('http://10.121.223.144:3000/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -17,9 +17,7 @@ const SignInPage = ({ navigation }) => {
           password: password
         })
       });
-      
       const message = await response.text();
-  
       if (message === "Login successful") {
         // handle successful login, e.g., navigate to a dashboard
         navigation.navigate('Dashboard');  
@@ -34,7 +32,6 @@ const SignInPage = ({ navigation }) => {
     }
   };
   
-
   const handleSignUpRedirect = () => {   
     navigation.navigate('SignUp');
   };

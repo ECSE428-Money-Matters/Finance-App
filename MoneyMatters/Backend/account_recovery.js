@@ -5,15 +5,16 @@ const pool = require("./db");
 const {rows} = require("pg/lib/defaults");
 var nodeoutlook = require('nodejs-nodemailer-outlook')
 const superagent = require('superagent');
+const router = express.Router();
 
 // Middleware
-app.use(cors());
-app.use(express.json());
+router.use(cors());
+router.use(express.json());
 
 // ROUTES
 
 // Create an account recovery request
-app.post("/recover", async (req,res) => {
+router.post("/recover", async (req,res) => {
     try {
         //console.log(JSON.stringify(req.body));
         const description = req.body// req.body contains the json description data of the example created
@@ -23,7 +24,7 @@ app.post("/recover", async (req,res) => {
         //console.log(JSON.stringify(username));
         refresh();
         //Check if username exists
-        const exists = await pool.query("SELECT * FROM Account WHERE username = $1",
+        const exists = await pool.query("SELECT * FROM users WHERE username = $1",
         [username]
         );
         if (exists.rows[0] === undefined) return res.status(404).json("Account not found");
@@ -69,7 +70,7 @@ app.post("/recover", async (req,res) => {
 });
 
 //Recover an account's password
-app.put("/recover/setpassword/:recid", async (req, res) => {
+router.put("/recover/setpassword/:recid", async (req, res) => {
     try {
         
         refresh();
@@ -103,7 +104,7 @@ app.put("/recover/setpassword/:recid", async (req, res) => {
         [recid])
         const username = usernameraw.rows[0].username;
         const updatePassword = await pool.query(
-            "UPDATE Account SET password = $1 WHERE username = $2",
+            "UPDATE users SET hashed_password = $1 WHERE username = $2",
             [password, username]
             );
         //Delete request
@@ -114,11 +115,6 @@ app.put("/recover/setpassword/:recid", async (req, res) => {
         console.error(err.message);
     }
  });
-
-
-app.listen(3000, () => {
-    console.log("Server started on port 3000");
-});
 
 //Refresh account recovery database, clear all expired requests or with no attempts 
 refresh = () => {
@@ -141,7 +137,7 @@ Date.prototype.subHours = function (h) {
     return this;
 }
 
-
+module.exports = router;
 
 // Rudimentary testing
 // Database populating
