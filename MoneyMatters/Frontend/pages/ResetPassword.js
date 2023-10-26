@@ -24,6 +24,7 @@ const ResetPassword = ({ navigation }) => {
 
       if (message === "Password was updated") {
         alert("Pasword has been reset");
+        navigation.navigate("SignIn");
       } else {
         alert(message);
       }
