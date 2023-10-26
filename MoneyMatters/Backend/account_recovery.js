@@ -2,16 +2,10 @@ const express = require("express");
 const app = express();
 const cors = require("cors");
 const pool = require("./db");
-<<<<<<< Updated upstream
-const {rows} = require("pg/lib/defaults");
-var nodeoutlook = require('nodejs-nodemailer-outlook')
-const superagent = require('superagent');
-const router = express.Router();
-=======
 const { rows } = require("pg/lib/defaults");
 var nodeoutlook = require("nodejs-nodemailer-outlook");
 const superagent = require("superagent");
->>>>>>> Stashed changes
+const router = express.Router();
 
 // Middleware
 router.use(cors());
@@ -20,37 +14,19 @@ router.use(express.json());
 // ROUTES
 
 // Create an account recovery request
-<<<<<<< Updated upstream
-router.post("/recover", async (req,res) => {
-    try {
-        //console.log(JSON.stringify(req.body));
-        const description = req.body// req.body contains the json description data of the example created
-        
-        //const email = description.email;
-        const username = description.username;
-        //console.log(JSON.stringify(username));
-        refresh();
-        //Check if username exists
-        const exists = await pool.query("SELECT * FROM users WHERE username = $1",
-        [username]
-        );
-        if (exists.rows[0] === undefined) return res.status(404).json("Account not found");
-=======
-app.post("/recover", async (req, res) => {
+router.post("/recover", async (req, res) => {
   try {
     //console.log(JSON.stringify(req.body));
     const description = req.body; // req.body contains the json description data of the example created
->>>>>>> Stashed changes
 
     //const email = description.email;
     const username = description.username;
     //console.log(JSON.stringify(username));
     refresh();
     //Check if username exists
-    const exists = await pool.query(
-      "SELECT * FROM Account WHERE username = $1",
-      [username]
-    );
+    const exists = await pool.query("SELECT * FROM users WHERE username = $1", [
+      username,
+    ]);
     if (exists.rows[0] === undefined)
       return res.status(404).json("Account not found");
 
@@ -106,25 +82,17 @@ app.post("/recover", async (req, res) => {
 });
 
 //Recover an account's password
-<<<<<<< Updated upstream
 router.put("/recover/setpassword/:recid", async (req, res) => {
-    try {
-        
-        refresh();
-        const description = req.body;
-=======
-app.put("/recover/setpassword/:recid", async (req, res) => {
   try {
     refresh();
     const description = req.body;
->>>>>>> Stashed changes
-
     const recid = req.params.recid;
     //console.log(recid)
     const exists = await pool.query(
       "SELECT * FROM accountrecovery WHERE accountrecoveryid = $1",
       [recid]
     );
+
     if (exists.rows[0] === undefined)
       return res.status(404).json("Account Recovery Request not found");
 
@@ -147,51 +115,6 @@ app.put("/recover/setpassword/:recid", async (req, res) => {
         return res.json(
           "Error, wrong code. No more attemps accepted for this request"
         );
-<<<<<<< Updated upstream
-        if (exists.rows[0] === undefined) return res.status(404).json("Account Recovery Request not found");
-
-        const code = description.code;
-        const password = description.password;
-        
-        if (exists.rows[0].code != code) {
-            refresh();
-            var attempts = await pool.query("SELECT attempts FROM AccountRecovery WHERE accountrecoveryid = $1",
-            [recid]);
-            var nbattempts = attempts.rows[0].attempts;
-            nbattempts--;
-            await pool.query("UPDATE AccountRecovery SET attempts = $1 WHERE accountrecoveryid = $2",
-            [nbattempts,recid])
-            if (nbattempts == 0) {
-                return res.json("Error, wrong code. No more attemps accepted for this request");
-            }
-            return res.status(400).json("Error, wrong code. "+nbattempts + " attempts left.")
-        }
-        //Update password
-        const usernameraw = await pool.query("SELECT username FROM AccountRecovery WHERE AccountRecoveryId = $1",
-        [recid])
-        const username = usernameraw.rows[0].username;
-        const updatePassword = await pool.query(
-            "UPDATE users SET hashed_password = $1 WHERE username = $2",
-            [password, username]
-            );
-        //Delete request
-        await pool.query("DELETE FROM AccountRecovery WHERE AccountRecoveryId = $1",
-        [recid])
-        res.json("Password was updated");
-    } catch (err) {
-        console.error(err.message);
-    }
- });
-
-//Refresh account recovery database, clear all expired requests or with no attempts 
-refresh = () => {
-    var datetime = new Date().subHours(1);
-    var threshold = 0
-    var database = pool.query(
-        "DELETE FROM AccountRecovery WHERE creationDate<$1 OR attempts=$2",
-        [datetime,threshold]
-    );
-=======
       }
       return res
         .status(400)
@@ -204,7 +127,7 @@ refresh = () => {
     );
     const username = usernameraw.rows[0].username;
     const updatePassword = await pool.query(
-      "UPDATE Account SET password = $1 WHERE username = $2",
+      "UPDATE users SET hashed_password = $1 WHERE username = $2",
       [password, username]
     );
     //Delete request
@@ -217,11 +140,6 @@ refresh = () => {
     console.error(err.message);
   }
 });
-
-app.listen(3000, () => {
-  console.log("Server started on port 3000");
-});
->>>>>>> Stashed changes
 
 //Refresh account recovery database, clear all expired requests or with no attempts
 refresh = () => {
@@ -239,17 +157,11 @@ Date.prototype.addHours = function (h) {
 };
 
 Date.prototype.subHours = function (h) {
-<<<<<<< Updated upstream
-    this.setTime(this.getTime() - (h * 60 * 60 * 1000));
-    return this;
-}
-
-module.exports = router;
-=======
   this.setTime(this.getTime() - h * 60 * 60 * 1000);
   return this;
 };
->>>>>>> Stashed changes
+
+module.exports = router;
 
 // Rudimentary testing
 // Database populating
