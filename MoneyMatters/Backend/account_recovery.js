@@ -19,13 +19,13 @@ router.post("/recover", async (req, res) => {
     //console.log(JSON.stringify(req.body));
     const description = req.body; // req.body contains the json description data of the example created
 
-    //const email = description.email;
-    const username = description.username;
+    const email = description.email;
+    //const username = description.username;
     //console.log(JSON.stringify(username));
     refresh();
-    //Check if username exists
-    const exists = await pool.query("SELECT * FROM users WHERE username = $1", [
-      username,
+    //Check if email exists
+    const exists = await pool.query("SELECT * FROM users WHERE email = $1", [
+      email,
     ]);
     if (exists.rows[0] === undefined)
       return res.status(404).json("Account not found");
@@ -33,7 +33,7 @@ router.post("/recover", async (req, res) => {
     //Delete duplicate if exists (not implemented)
     //await pool.query("DELETE from AccountRecovery WHERE email = $1",[email]);
 
-    const email = exists.rows[0].email;
+    const username = exists.rows[0].username;
 
     const newRecoveryRequest = await pool.query(
       "INSERT INTO AccountRecovery (email,username) VALUES($1,$2) RETURNING *",
@@ -53,7 +53,7 @@ router.post("/recover", async (req, res) => {
       creationdate +
       "." +
       '<br><a href="' +
-      "http://" +
+      "exp://" +
       host +
       "/recover/setpassword/" +
       recId +

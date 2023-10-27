@@ -7,8 +7,10 @@ const ResetPassword = ({ navigation }) => {
 
   const handleResetPassword = async () => {
     try {
-      const url = "window.location.href";
-      console.log("url:" + url);
+      const url =
+        "http://" + "192.168.0.104" + ":3000" + "/recover/setpassword/";
+      console.log(url);
+      console.log(recid);
       const response = await fetch(url, {
         method: "PUT",
         headers: {
@@ -20,9 +22,11 @@ const ResetPassword = ({ navigation }) => {
         }),
       });
 
-      const message = await response.text();
+      const resBody = await response.text();
+      const message = JSON.parse(resBody);
+      console.log(message);
 
-      if (message === "Password was updated") {
+      if (message == "Password was updated") {
         alert("Pasword has been reset");
         navigation.navigate("SignIn");
       } else {

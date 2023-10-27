@@ -6,7 +6,8 @@ const PasswordRecovery = ({ navigation }) => {
 
   const handlePasswordRecovery = async () => {
     try {
-      const url = "http://" + "10.121.154.92:3000" + "/recover";
+      const url = "http://" + "192.168.0.104" + ":3000" + "/recover";
+      console.log(url);
       const response = await fetch(url, {
         method: "POST",
         headers: {
@@ -17,10 +18,13 @@ const PasswordRecovery = ({ navigation }) => {
         }),
       });
 
-      const message = await response.text();
+      const resBody = await response.text();
+      const message = JSON.parse(resBody);
+      console.log(message);
 
-      if (message === "Password recovery successfully requested") {
+      if (message == "Password recovery successfully requested") {
         alert("Check your email for password recovery instructions!");
+        navigation.navigate("SignIn");
       } else {
         alert(message);
       }

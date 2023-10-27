@@ -11,7 +11,7 @@ import Dashboard from "../pages/Dashboard";
 const Stack = createStackNavigator();
 
 const linking = {
-  prefixes: ["financeapp://"],
+  prefixes: ["exp://", "financeapp"],
   config: {
     screens: {
       ResetPassword: "recover/setpassword/:token",
@@ -44,18 +44,18 @@ const AppNavigator = () => {
       <Stack.Screen
         name="PasswordRecovery"
         component={PasswordRecovery}
-        options={{headerShown: false }}
-        />
-        <Stack.Screen
-            name="VerificationCode"
-            component={VerificationCode}
-            options={{headerShown: false }}
-        />
-        <Stack.Screen
-            name="Dashboard"
-            component={Dashboard}
-            options={{headerShown: false }}
-        />
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="VerificationCode"
+        component={VerificationCode}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="Dashboard"
+        component={Dashboard}
+        options={{ headerShown: false }}
+      />
     </Stack.Navigator>
   );
 };

@@ -25,11 +25,11 @@ CREATE TABLE accountrecovery(
 );
 
 -- Permissions Grants, must be last for permissions to be granted to every newly created tables
-GRANT ALL ON DATABASE "MoneyMatters" TO "MoneyMatters";
+GRANT ALL ON DATABASE MoneyMatters TO MoneyMatters;
 
-GRANT TEMPORARY, CONNECT ON DATABASE "MoneyMatters" TO PUBLIC;
+GRANT TEMPORARY, CONNECT ON DATABASE MoneyMatters TO PUBLIC;
 
-GRANT ALL ON DATABASE "MoneyMatters" TO postgres;
+GRANT ALL ON DATABASE MoneyMatters TO postgres;
 
-GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO "MoneyMatters";
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO MoneyMatters;
 
