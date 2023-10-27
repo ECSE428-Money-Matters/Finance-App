@@ -1,13 +1,20 @@
 import React, { useState } from "react";
 import { View, StyleSheet, TextInput, Button, Text } from "react-native";
-
+import * as Linking from "expo-linking";
 const PasswordRecovery = ({ navigation }) => {
   const [email, setEmail] = useState("");
 
   const handlePasswordRecovery = async () => {
     try {
-      const url = "http://" + "192.168.0.104" + ":3000" + "/recover";
-      console.log(url);
+      const requrl = Linking.createURL();
+      var hostname = requrl.split(":");
+      hostname.pop();
+      hostname = hostname.join("");
+      hostname = hostname.split("//");
+      hostname.shift();
+      hostname = hostname.join("");
+      const url = "http://" + hostname + ":3000" + "/recover";
+      console.log("Requesting at " + url);
       const response = await fetch(url, {
         method: "POST",
         headers: {
@@ -15,6 +22,7 @@ const PasswordRecovery = ({ navigation }) => {
         },
         body: JSON.stringify({
           email: email,
+          url: requrl,
         }),
       });
 

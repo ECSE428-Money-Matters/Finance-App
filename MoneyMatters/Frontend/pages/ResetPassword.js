@@ -1,16 +1,25 @@
 import React, { useState } from "react";
 import { View, StyleSheet, TextInput, Button, Text } from "react-native";
+import * as Linking from "expo-linking";
 
-const ResetPassword = ({ navigation }) => {
+const ResetPassword = ({ route, navigation }) => {
   const [code, setCode] = useState("");
   const [password, setPassword] = useState("");
 
   const handleResetPassword = async () => {
     try {
+      const recid = route.params.recid;
+      const requrl = Linking.createURL();
+      var hostname = requrl.split(":");
+      hostname.pop();
+      hostname = hostname.join("");
+      hostname = hostname.split("//");
+      hostname.shift();
+      hostname = hostname.join("");
       const url =
-        "http://" + "192.168.0.104" + ":3000" + "/recover/setpassword/";
+        "http://" + hostname + ":3000" + "/recover/setpassword/" + recid;
+      console.log("Requesting at " + url);
       console.log(url);
-      console.log(recid);
       const response = await fetch(url, {
         method: "PUT",
         headers: {

@@ -20,6 +20,7 @@ router.post("/recover", async (req, res) => {
     const description = req.body; // req.body contains the json description data of the example created
 
     const email = description.email;
+    const host = description.url;
     //const username = description.username;
     //console.log(JSON.stringify(username));
     refresh();
@@ -43,7 +44,7 @@ router.post("/recover", async (req, res) => {
     const code = newRecoveryRequest.rows[0].code;
     const recId = newRecoveryRequest.rows[0].accountrecoveryid;
     const creationdate = newRecoveryRequest.rows[0].creationdate;
-    const host = req.get("host");
+    //const host = req.get("host");
     var message =
       "<html><body><p>Account recovery id: " +
       recId +
@@ -52,12 +53,11 @@ router.post("/recover", async (req, res) => {
       "<br>The request is valid for 1 hour from " +
       creationdate +
       "." +
-      '<br><a href="' +
-      "exp://" +
+      "<br><br><br>Link to reset your password: " +
       host +
-      "/recover/setpassword/" +
+      "/--/recover/setpassword/" +
       recId +
-      '">Click here to reset your password</a>';
+      "";
     //console.log(message);
     //Mailer functions
 
@@ -86,6 +86,10 @@ router.put("/recover/setpassword/:recid", async (req, res) => {
     refresh();
     const description = req.body;
     const recid = req.params.recid;
+    if (recid === undefined)
+      return res
+        .status(404)
+        .json("Invalid Account Recovery Id, please make a new request.");
     //console.log(recid)
     const exists = await pool.query(
       "SELECT * FROM accountrecovery WHERE accountrecoveryid = $1",
@@ -93,7 +97,9 @@ router.put("/recover/setpassword/:recid", async (req, res) => {
     );
 
     if (exists.rows[0] === undefined)
-      return res.status(404).json("Account Recovery Request not found");
+      return res
+        .status(404)
+        .json("Account Recovery Request not found, please make a new request");
 
     const code = description.code;
     const password = description.password;
@@ -110,6 +116,7 @@ router.put("/recover/setpassword/:recid", async (req, res) => {
         "UPDATE AccountRecovery SET attempts = $1 WHERE accountrecoveryid = $2",
         [nbattempts, recid]
       );
+      refresh();
       if (nbattempts == 0) {
         return res.json(
           "Error, wrong code. No more attemps accepted for this request"
