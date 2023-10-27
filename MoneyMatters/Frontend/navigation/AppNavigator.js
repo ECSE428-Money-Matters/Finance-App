@@ -5,6 +5,8 @@ import SignUpPage from "../pages/SignUpPage";
 import PasswordRecovery from "../pages/PasswordRecovery";
 import ResetPassword from "../pages/ResetPassword";
 import * as Linking from "expo-linking";
+import VerificationCode from "../pages/VerificationCode";
+import Dashboard from "../pages/Dashboard";
 
 const Stack = createStackNavigator();
 
@@ -42,13 +44,18 @@ const AppNavigator = () => {
       <Stack.Screen
         name="PasswordRecovery"
         component={PasswordRecovery}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="ResetPassword"
-        component={ResetPassword}
-        options={{ headerShown: false }}
-      />
+        options={{headerShown: false }}
+        />
+        <Stack.Screen
+            name="VerificationCode"
+            component={VerificationCode}
+            options={{headerShown: false }}
+        />
+        <Stack.Screen
+            name="Dashboard"
+            component={Dashboard}
+            options={{headerShown: false }}
+        />
     </Stack.Navigator>
   );
 };

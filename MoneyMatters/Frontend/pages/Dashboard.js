@@ -1,27 +1,26 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, TextInput, Button, Text } from 'react-native';
 
-const SignInPage = ({ navigation }) => {  
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+const Dashboard = ({ navigation}) => {
+  const [code, setCode] = useState('');
 
-  const handleSignIn = async () => {
+  const handleCode = async () => {
     try {
-      const response = await fetch('http://127.0.0.1:3000/login', {
+      const response = await fetch('http://127.0.0.1:3000/verify', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          username: username,
-          password: password
+          email: email,
+          code: code
         })
       });
 
       const responseBody = await response.text();
       const message = JSON.parse(responseBody); // Parse the JSON response
 
-      if (message === "Login successful") {
+      if (message.message === "Account created successfully!") {
         // handle successful login, e.g., navigate to a dashboard
         navigation.navigate('Dashboard');  
       } else {
@@ -30,7 +29,7 @@ const SignInPage = ({ navigation }) => {
       }
     } catch (error) {
       // handle error, e.g., network error or server error
-      console.error("Error during sign in:", error);
+      console.error("Error during verification: ", error);
       alert("Failed to connect to the server.");
     }
   };
@@ -45,26 +44,16 @@ const SignInPage = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.label}>Username:</Text>
+      <Text style={styles.label}>This is Dashboard. Nothing to show yet:</Text>
       <TextInput 
         style={styles.input} 
-        value={username}
-        onChangeText={setUsername}
-        placeholder="Enter your username"
-        keyboardType="email-address"
-        autoCapitalize="none"
-      />
-      
-      <Text style={styles.label}>Password:</Text>
-      <TextInput 
-        style={styles.input} 
-        value={password}
-        onChangeText={setPassword}
-        placeholder="Enter your password"
-        secureTextEntry={true}
+        value={code}
+        onChangeText={setCode}
+        placeholder="Enter your code"
+        secureTextEntry={false}
       />
 
-      <Button title="Sign In" onPress={handleSignIn} />
+      <Button title="Verify" onPress={handleCode} />
 
       <Text style={styles.linkText} onPress={handleSignUpRedirect}>   {/* <-- New "Sign Up" link */}
         Don't have an account? Sign Up
@@ -103,4 +92,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default SignInPage;
+export default Dashboard;

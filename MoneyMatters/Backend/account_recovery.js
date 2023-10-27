@@ -39,7 +39,6 @@ router.post("/recover", async (req, res) => {
       "INSERT INTO AccountRecovery (email,username) VALUES($1,$2) RETURNING *",
       [email, username]
     );
-
     //Send email with the code and recovery id
     const code = newRecoveryRequest.rows[0].code;
     const recId = newRecoveryRequest.rows[0].accountrecoveryid;
@@ -69,7 +68,7 @@ router.post("/recover", async (req, res) => {
       },
       from: "moneymattershere@outlook.com",
       to: email,
-      subject: "Your recovery code for Finance App",
+      subject: "Your recovery code for MoneyMatters",
       html: message,
       onError: (e) => console.log(e),
       onSuccess: (i) => console.log(i),

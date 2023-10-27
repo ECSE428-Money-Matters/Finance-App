@@ -2,27 +2,29 @@ import React, { useState } from "react";
 import { TouchableOpacity, Text, StyleSheet, View, TextInput, Button } from "react-native";
 
 const SignUpPage = ({ navigation }) => {
-  const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
   const handleSignUp = async () => {
     try {
-      const response = await fetch('http://10.121.223.144:3000/register', {
+      const response = await fetch('http://127.0.0.1:3000/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          fullName: fullName,
-          username: email,   
+          email: email,
+          username: username,
           password: password
         })
       });
-      const message = await response.text();
-      if (message === "Login successful") {
+
+      const responseBody = await response.text();
+      const message = JSON.parse(responseBody); // Parse the JSON response
+      if (message.message === "Verification code sent to email. Please verify to complete registration.") {
         // handle successful login, e.g., navigate to a dashboard
-        navigation.navigate('SignIn');  
+        navigation.navigate('VerificationCode', { email: email });
       } else {
         // handle unsuccessful login, e.g., display an error message
         alert(message);  
@@ -42,21 +44,22 @@ const SignUpPage = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Welcome to MoneyMatters</Text>
-      <Text style={styles.label}>Full Name:</Text>
-      <TextInput 
-        style={styles.input} 
-        value={fullName}
-        onChangeText={setFullName}
-        placeholder="Enter your full name"
-      />
-
       <Text style={styles.label}>Email:</Text>
       <TextInput 
         style={styles.input} 
         value={email}
         onChangeText={setEmail}
-        placeholder="Enter your email"
         keyboardType="email-address"
+        placeholder="Enter your email"
+        autoCapitalize="none"
+      />
+
+      <Text style={styles.label}>Username:</Text>
+      <TextInput 
+        style={styles.input} 
+        value={username}
+        onChangeText={setUsername}
+        placeholder="Enter your username"
         autoCapitalize="none"
       />
       
