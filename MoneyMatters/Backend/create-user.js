@@ -5,6 +5,8 @@ const nodemailer = require('nodemailer');
 const express = require('express');
 const cors = require('cors');
 const pool = require('./db');
+var nodeoutlook = require('nodejs-nodemailer-outlook')
+const superagent = require('superagent');
 const router = express.Router();
 
 // Uncomment when ready to use hashedPassword
@@ -31,17 +33,20 @@ const transporter = nodemailer.createTransport({
 
 // A function to send emails
 async function sendVerificationEmail(toEmail, code) {
-  try {
-    await transporter.sendMail({
-      from: 'noreply.moneymatters@gmail.com',
-      to: toEmail,
-      subject: 'Verification Code for MoneyMatters',
-      text: `Your verification code is: ${code}`
-    });
-    console.log('Verification email sent');
-  } catch (error) {
-    console.error('Error sending verification email:', error);
-  }
+  var message = "<html><body><p>Account verification code: " + code + "</p>";
+  nodeoutlook.sendEmail({
+        auth: {
+          user: "moneymattershere@outlook.com",
+          pass: "Th1sisthefin@ncialmail"
+        },
+        from: 'moneymattershere@outlook.com',
+        to: toEmail,
+        subject: 'Your verification code for MoneyMatters',
+        html: message,
+        onError: (e) => console.log(e),
+        onSuccess: (i) => console.log(i)
+      }
+  );
 }
 
 // Step 2: Implement the user account creation process
