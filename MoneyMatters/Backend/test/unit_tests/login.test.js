@@ -1,7 +1,9 @@
 const request = require('supertest');
 const sinon = require('sinon');
 const app = require('../../index.js');
+
 const { test, expect, beforeEach, afterEach, describe} = require('@jest/globals');
+
 
 let dbStub;
 
@@ -16,6 +18,7 @@ afterEach(() => {
     // Restore the database pool to its original state after each test
     dbStub.restore();
 });
+
 
 describe('login automated tests', () => {
 
@@ -75,3 +78,4 @@ describe('login automated tests', () => {
         expect(res.body).toBe("Too many login attempts. Select 'Forgot Password' to proceed.");
     });
 })
+

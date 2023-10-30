@@ -82,12 +82,14 @@ router.post('/register', async (req, res) => {
     // If in test environment, return the verification code in the response
     if (process.env.NODE_ENV === 'test') {
 
+
       // testing method
       await sendVerificationEmail(email, code);
 
       return res.json({
         verificationCode: code, // This will be used in the test environment only
         message: 'Verification code sent to email. Please verify to complete registration.'
+
       });
     }
     // if not in test environment, send verification email.

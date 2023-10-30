@@ -34,6 +34,7 @@ describe('testing create-user', () => {
 
         test('should register successfully', async () => {
             const res = await request(app).post('/register').send({
+
                 email: 'testemail@example.com',
                 username: 'testuser',
                 password: 'testpassword'
