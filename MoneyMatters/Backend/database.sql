@@ -1,4 +1,4 @@
-CREATE DATABASE MoneyMatters;
+--CREATE DATABASE MoneyMatters;
 
 -- To Create a table:
 
