@@ -17,7 +17,7 @@ router.post('/add_expense', async (req, res) => {
         const {  user_id, expense_name, amount, posted_date, category, optional_description } = req.body;
 
         // Check if any required field is empty
-        if (!user_id || !expense_name ||  !amount || !posted_date || !!category) {
+        if (!user_id || !expense_name ||  !amount || !posted_date || !category) {
             return res.status(400).json({ error: 'All fields are required.' });
         }
 
@@ -43,9 +43,21 @@ router.post('/add_expense', async (req, res) => {
     }
 });
 
+router.get('/view_expense', async (req, res) => {
+    console.log("viewing all expenses");
+    try {
+        const allExpenses = await pool.query("SELECT * FROM expenses");
+        res.json(allExpenses.rows);
+    } catch (err) {
+        console.error(err.message);
+    }
+});
+
 module.exports = router;
-// make get expense
+
 // get all expenses linked to a user
-// get all expenses
+// get specific expense
+
+
 
 
