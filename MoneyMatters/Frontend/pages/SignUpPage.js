@@ -8,7 +8,7 @@ const SignUpPage = ({ navigation }) => {
 
   const handleSignUp = async () => {
     try {
-      const response = await fetch('http://127.0.0.1:3000/register', {
+      const response = await fetch('http://192.168.2.11:3000/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
