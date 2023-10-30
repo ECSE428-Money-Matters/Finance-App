@@ -8,6 +8,7 @@ const loginAttempts = {};
 const create_user = require('./create-user');
 const login = require('./login.js');
 const recover = require('./account_recovery.js')
+const expense = require('./expenses.js');
 
 // Middleware
 app.use(cors());
@@ -29,5 +30,6 @@ app.use((req, res, next) => {
 app.use(create_user)
 app.use(login);
 app.use(recover);
+app.use(expense);
 
 module.exports = app;
