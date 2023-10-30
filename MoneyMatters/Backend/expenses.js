@@ -66,10 +66,16 @@ router.post('/add_expense', async (req, res) => {
 });
 
 router.get('/view_expense', async (req, res) => {
-    console.log("viewing all expenses");
+    console.log("viewing expenses for a user");
     try {
-        const allExpenses = await pool.query("SELECT * FROM expenses");
-        res.json(allExpenses.rows);
+        const { user_id } = req.query;
+
+        if (!user_id) {
+            return res.status(400).json({ error: 'User ID is required.' });
+        }
+
+        const userExpenses = await pool.query("SELECT * FROM expenses WHERE user_id = $1", [user_id]);
+        res.json(userExpenses.rows);
     } catch (err) {
         console.error(err.message);
     }
