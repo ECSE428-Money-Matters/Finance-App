@@ -27,7 +27,7 @@ CREATE TABLE accountrecovery(
 CREATE TABLE IF NOT EXISTS expenses(
     expense_id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     expense_name VARCHAR(255) NOT NULL,
-    user_id UUID NOT NULL,
+    email VARCHAR(255) NOT NULL,
     amount NUMERIC(10, 2) NOT NULL,
     posted_date DATE NOT NULL,
     category VARCHAR(255) NOT NULL,

@@ -1,23 +1,17 @@
-// const nodemailer = require('nodemailer');
 const express = require('express');
 const cors = require('cors');
 const pool = require('./db');
 const router = express.Router();
 
-
 const app = require('./index.js');
 
-// TODO:
-// refund?
-// need to fix invalid amount, 0 dollars, when not logged in?
 router.post('/add_expense', async (req, res) => {
     console.log("adding an expense");
     try {
+        const { email, expense_name, amount, posted_date, category, optional_description } = req.body;
 
-        const {  user_id, expense_name, amount, posted_date, category, optional_description } = req.body;
-
-        // Check if any required field is empty
-        if (!user_id || !expense_name ||  !amount || !posted_date || !category) {
+        // No empty fields
+        if (!email || !expense_name ||  !amount || !posted_date || !category) {
             return res.status(400).json({ error: 'All fields are required.' });
         }
 
@@ -50,12 +44,13 @@ router.post('/add_expense', async (req, res) => {
 
         // add to expenses table
         const result = await pool.query(
-            "INSERT INTO expenses ( user_id, expense_name, amount, posted_date, category, optional_description) VALUES($1, $2, $3, $4, $5, $6) RETURNING *", 
-            [user_id, expense_name, amount, posted_date, category, optional_description]);  
+            "INSERT INTO expenses (email, expense_name, amount, posted_date, category, optional_description) VALUES($1, $2, $3, $4, $5, $6) RETURNING *", 
+            [email, expense_name, amount, posted_date, category, optional_description]
+        );  
 
-            if (result.rows.length > 0) {
-                console.log(`Expense added successfully.`);
-            }
+        if (result.rows.length > 0) {
+            console.log(`Expense added successfully.`);
+        }
 
         res.json({ message: 'Expense added successfully.' });
 
@@ -68,24 +63,18 @@ router.post('/add_expense', async (req, res) => {
 router.get('/view_expense', async (req, res) => {
     console.log("viewing expenses for a user");
     try {
-        const { user_id } = req.query;
+        const { email } = req.query;
 
-        if (!user_id) {
-            return res.status(400).json({ error: 'User ID is required.' });
+        if (!email) {
+            return res.status(400).json({ error: 'Email is required.' });
         }
 
-        const userExpenses = await pool.query("SELECT * FROM expenses WHERE user_id = $1", [user_id]);
+        const userExpenses = await pool.query("SELECT * FROM expenses WHERE email = $1", [email]);
         res.json(userExpenses.rows);
+
     } catch (err) {
         console.error(err.message);
     }
 });
 
 module.exports = router;
-
-// get all expenses linked to a user
-// get specific expense
-
-
-
-
