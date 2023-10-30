@@ -9,7 +9,7 @@ const Expense = (props) => {
                 <Text style={styles.expenseText}>{props.desc}</Text>
             </View>
             <View>
-                <Text style={styles.amountText}>{props.amt}</Text>
+                <Text style={styles.amountText}>${props.amt}</Text>
             </View>
         </View>
     )

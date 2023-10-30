@@ -15,6 +15,7 @@ import Expense from "../components/Expense";
 const Dashboard = ({navigation}) => {
     const [expenseDescription, setExpenseDescription] = useState('');
     const [expenseAmount, setExpenseAmount] = useState('');
+    const [expenses, setExpenses] = useState([])
 
     const clearText = () => {
         setExpenseAmount('');
@@ -32,6 +33,12 @@ const Dashboard = ({navigation}) => {
             console.log("Added expense");
             console.log("Description: " + expenseDescription);
             console.log("Amount: " + expenseAmount);
+            const newExpense = {
+                id: new Date().getTime(),
+                expenseName: expenseDescription,
+                amount: expenseAmount,
+            };
+            setExpenses([...expenses, newExpense]);
             // const response = await fetch('http://127.0.0.1:3000/login', {
             //     method: 'POST',
             //     headers: {
@@ -73,7 +80,9 @@ const Dashboard = ({navigation}) => {
             <ScrollView>
                 <View style={styles.expenses}>
                     <Expense desc={'Ex1'} amt={25}/>
-                    <Expense desc={'Ex2'} amt={25}/>
+                    {expenses.map((expense) => (
+                        <Expense desc={expense.expenseName} amt={expense.amount} key={expense.id}/>
+                    ))}
                 </View>
             </ScrollView>
         )
@@ -86,7 +95,8 @@ const Dashboard = ({navigation}) => {
                     style={styles.expenseDescription}
                     value={expenseDescription}
                     onChangeText={setExpenseDescription}
-                    placeholder="Enter your expense desccription"
+                    placeholder="Enter your expense description"
+                    color={'#1D3557'}
                 />
                 <TextInput
                     style={styles.expenseAmount}
@@ -94,10 +104,11 @@ const Dashboard = ({navigation}) => {
                     onChangeText={setExpenseAmount}
                     placeholder="Amount"
                     keyboardType={"numeric"}
+                    color={'#1D3557'}
                 />
 
                 <TouchableOpacity onPress={submitButton}>
-                    <Text style={styles.addButton}>+</Text>
+                    <Text style={styles.addButton} color={'#1D3557'}>+</Text>
                 </TouchableOpacity>
             </KeyboardAvoidingView>
         )
@@ -150,7 +161,8 @@ const styles = StyleSheet.create({
         marginBottom: 15,
         borderRadius: 5,
         height: 35,
-        width: 250
+        width: 250,
+        backgroundColor: '#A8DADC'
     },
     expenseAmount: {
         borderWidth: 1,
@@ -159,7 +171,8 @@ const styles = StyleSheet.create({
         marginBottom: 15,
         borderRadius: 5,
         height: 35,
-        width: 70
+        width: 70,
+        backgroundColor: '#A8DADC'
     },
     addButton: {
         borderWidth: 1,
@@ -168,7 +181,8 @@ const styles = StyleSheet.create({
         marginBottom: 15,
         borderRadius: 5,
         height: 35,
-        width: 25
+        width: 25,
+        backgroundColor: '#A8DADC'
     },
     bottomContainer: {
         flex: 1,
@@ -180,9 +194,11 @@ const styles = StyleSheet.create({
         bottom: 20,
         left: 0,
         right: 0,
-        alignItems: 'center'
+        alignItems: 'center',
+        zIndex: 1
     }, expenses: {
-        paddingVertical: 20
+        paddingVertical: 20,
+        zIndex: 0
     },
 });
 
