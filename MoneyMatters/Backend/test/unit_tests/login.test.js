@@ -1,7 +1,7 @@
 const request = require('supertest');
 const sinon = require('sinon');
 const app = require('../../index.js');
-const { test, expect, beforeEach, afterEach} = require('@jest/globals');
+const { test, expect, beforeEach, afterEach, describe} = require('@jest/globals');
 
 let dbStub;
 
@@ -17,58 +17,61 @@ afterEach(() => {
     dbStub.restore();
 });
 
-test('successful login', async () => {
-    const username = 'test_login_User';
-    const password = 'testPass123';
+describe('login automated tests', () => {
 
-    // Mock a successful DB response
-    dbStub.returns(Promise.resolve({ rows: [{ username: username, hashed_password: password }] }));
+    test('successful login', async () => {
+        const username = 'test_login_User';
+        const password = 'testPass123';
 
-    const res = await request(app).post('/login').send({ username, password });
+        // Mock a successful DB response
+        dbStub.returns(Promise.resolve({ rows: [{ username: username, hashed_password: password }] }));
 
-    expect(res.status).toBe(200);
-    expect(res.body).toBe('Login successful');
-});
+        const res = await request(app).post('/login').send({ username, password });
 
-test('invalid password', async () => {
-    const username = 'testUser';
-    const password = 'testPass123';
+        expect(res.status).toBe(200);
+        expect(res.body).toBe('Login successful');
+    });
 
-    // Mock a DB response with a different password
-    dbStub.returns(Promise.resolve({ rows: [{ username: username, hashed_password: "wrong_pass" }] }));
+    test('invalid password', async () => {
+        const username = 'testUser';
+        const password = 'testPass123';
 
-    const res = await request(app).post('/login').send({ username, password });
+        // Mock a DB response with a different password
+        dbStub.returns(Promise.resolve({ rows: [{ username: username, hashed_password: "wrong_pass" }] }));
 
-    expect(res.status).toBe(200);
-    expect(res.body).toBe('Invalid password');
-});
+        const res = await request(app).post('/login').send({ username, password });
 
-test('non-existent username', async () => {
-    const username = 'testUser';
-    const password = 'testPass123';
+        expect(res.status).toBe(200);
+        expect(res.body).toBe('Invalid password');
+    });
 
-    // Mock a DB response indicating no such user
-    dbStub.returns(Promise.resolve([]));
+    test('non-existent username', async () => {
+        const username = 'testUser';
+        const password = 'testPass123';
 
-    const res = await request(app).post('/login').send({ username, password });
+        // Mock a DB response indicating no such user
+        dbStub.returns(Promise.resolve([]));
 
-    expect(res.status).toBe(200);
-    expect(res.body).toBe('Username not found');
-});
+        const res = await request(app).post('/login').send({ username, password });
 
-test('exceeding login attempts', async () => {
-    const username = 'testUser';
-    const password = 'testPass123';
+        expect(res.status).toBe(200);
+        expect(res.body).toBe('Username not found');
+    });
 
-    // Simulate 3 failed attempts
-    for (let i = 0; i < 3; i++) {
-        // Mock a DB response with a different password for failed attempt
-        dbStub.returns(Promise.resolve({ rows: [{ username: username, hashed_password: i }] }));
-        await request(app).post('/login').send({ username, password });
-    }
+    test('exceeding login attempts', async () => {
+        const username = 'testUser';
+        const password = 'testPass123';
 
-    const res = await request(app).post('/login').send({ username, password });
+        // Simulate 3 failed attempts
+        for (let i = 0; i < 3; i++) {
+            // Mock a DB response with a different password for failed attempt
+            dbStub.returns(Promise.resolve({ rows: [{ username: username, hashed_password: i }] }));
+            await request(app).post('/login').send({ username, password });
+        }
 
-    expect(res.status).toBe(200);
-    expect(res.body).toBe("Too many login attempts. Select 'Forgot Password' to proceed.");
-});
+        const res = await request(app).post('/login').send({ username, password });
+
+        expect(res.status).toBe(200);
+        expect(res.body).toBe("Too many login attempts. Select 'Forgot Password' to proceed.");
+    });
+})

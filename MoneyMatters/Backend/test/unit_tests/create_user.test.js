@@ -34,7 +34,7 @@ describe('testing create-user', () => {
 
         test('should register successfully', async () => {
             const res = await request(app).post('/register').send({
-                email: 'anthony.boustany@hotmail.com',
+                email: 'testemail@example.com',
                 username: 'testuser',
                 password: 'testpassword'
             });
@@ -56,7 +56,7 @@ describe('testing create-user', () => {
 
             // Calling register because it's the only way to create a Verification code
             const res = await request(app).post('/register').send({
-                email: 'anthony.boustany@hotmail.com',
+                email: 'testemail@example.com',
                 username: 'testuser',
                 password: 'testpassword'
             });
@@ -72,7 +72,7 @@ describe('testing create-user', () => {
         test('should verify successfully', async () => {
 
             const res = await request(app).post('/verify').send({
-                email: 'anthony.boustany@hotmail.com',
+                email: 'testemail@example.com',
                 code: verificationCode
             });
 
@@ -82,7 +82,7 @@ describe('testing create-user', () => {
 
         test('should return error for invalid verification code', async () => {
             const res = await request(app).post('/verify').send({
-                email: 'anthony.boustany@hotmail.com',
+                email: 'testemail@example.com',
                 code: 654321  // Incorrect code
             });
 
