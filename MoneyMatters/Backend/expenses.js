@@ -21,9 +21,31 @@ router.post('/add_expense', async (req, res) => {
             return res.status(400).json({ error: 'All fields are required.' });
         }
 
+        // Check for empty title
+        if (expense_name.trim() === '') {
+            return res.status(400).json({ error: 'Expense title cannot be empty.' });
+        }
+
+        // Check for invalid amount (non-numeric or negative values)
+        if (isNaN(amount) || amount <= 0) {
+            return res.status(400).json({ error: 'Invalid amount. Amount should be a positive number.' });
+        }
+
+        // Check for zero dollars
+        if (amount == 0) {
+            return res.status(400).json({ error: 'Amount cannot be zero dollars.' });
+        }
+
         // avoid empty columns in db
         if (!optional_description) {
             optional_description = "N/A";
+        }
+
+        // Check if date is in the future
+        const currentDate = new Date();
+        const providedDate = new Date(posted_date);
+        if (providedDate > currentDate) {
+            return res.status(400).json({ error: 'Date cannot be in the future.' });
         }
 
         // add to expenses table
