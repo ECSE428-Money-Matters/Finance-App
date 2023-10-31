@@ -74,5 +74,33 @@ describe('Viewing Expenses', () => {
             return date >= new Date(startDate) && date <= new Date(endDate);
         })).toBe(true);
     });
-    // Mohammed add here additional test
+    
+    // Junaid
+    
+    test('should return expenses greater than a specified amount', async () => {
+        const thresholdAmount = 150;
+        const expenses = [
+            { expense_name: 'Expense 3', amount: 160, category: 'Housing' },
+            { expense_name: 'Expense 4', amount: 180, category: 'Fitness' },
+        ];
+
+        dbStub.returns(Promise.resolve({ rows: expenses }));
+
+        const res = await request(app).get(`/view_expenses?amount_greater_than=${thresholdAmount}`);
+
+        expect(res.status).toBe(200);
+        expect(res.body.length).toBe(expenses.length);
+        expect(res.body.every(expense => expense.amount > thresholdAmount)).toBe(true);
+    });
+
+    test('should handle future date selections', async () => {
+        const futureMonth = '2025-04';
+        dbStub.returns(Promise.resolve({ rows: [] }));
+
+        const res = await request(app).get(`/view_expenses?month=${futureMonth}`);
+
+        expect(res.status).toBe(400); // Assuming the server returns a 400 Bad Request status for invalid inputs.
+        expect(res.body.message).toBe("No expenses found for the selected month");
+    });
+
 });
