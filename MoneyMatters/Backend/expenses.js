@@ -63,7 +63,7 @@ router.post('/add_expense', async (req, res) => {
 router.get('/view_expense', async (req, res) => {
     console.log("viewing expenses for a user");
     try {
-        const { email } = req.body;
+        const { email } = req.query;
         const { month } = req.query; // Extracting the 'month' query parameter
        
         if (!email) {

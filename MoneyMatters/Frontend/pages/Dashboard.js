@@ -13,7 +13,7 @@ import {Colors} from "react-native/Libraries/NewAppScreen";
 import Expense from "../components/Expense";
 import DateTimePicker from "@react-native-community/datetimepicker";
 
-const Dashboard = ({ navigation, route }) => {
+const Dashboard = ({navigation, route}) => {
     // const { email } = route.params;
     const [expenseDescription, setExpenseDescription] = useState('');
     const [expenseAmount, setExpenseAmount] = useState('');
@@ -50,17 +50,17 @@ const Dashboard = ({ navigation, route }) => {
     }
 
     const onChange = ({type}, selectedD) => {
-      if (type == "set"){
-          const currentDate = selectedD;
-          setSelectedDate(currentDate);
+        if (type == "set") {
+            const currentDate = selectedD;
+            setSelectedDate(currentDate);
 
-          if(Platform.OS === "android"){
-              toggleDatePicker();
-              setExpenseDate(formatDate(currentDate));
-          }
-      } else {
-          toggleDatePicker();
-      }
+            if (Platform.OS === "android") {
+                toggleDatePicker();
+                setExpenseDate(formatDate(currentDate));
+            }
+        } else {
+            toggleDatePicker();
+        }
     };
 
     const submitButton = () => {
@@ -130,12 +130,13 @@ const Dashboard = ({ navigation, route }) => {
         return (
             <View>
                 <View>
-                    <Text style={styles.header} >My Expenses</Text>
+                    <Text style={styles.header}>My Expenses</Text>
                     <Text style={styles.subheader}>Summary</Text>
                 </View>
             </View>
         )
     }
+
     function renderExpenses() {
         return (
             <ScrollView>
@@ -174,24 +175,26 @@ const Dashboard = ({ navigation, route }) => {
         )
     }
 
-    function renderCategory(){
+    function renderCategory() {
         return (
 
-        <KeyboardAvoidingView style={styles.CatContainer} behavior={"padding"} enabled={true} keyboardVerticalOffset={50}>
-            <TextInput
-                style={styles.expenseCategory}
-                value={expenseCategory}
-                onChangeText={setExpenseCategory}
-                placeholder="Category"
-                color={'#1D3557'}
-            />
-        </KeyboardAvoidingView>
+            <KeyboardAvoidingView style={styles.CatContainer} behavior={"padding"} enabled={true}
+                                  keyboardVerticalOffset={50}>
+                <TextInput
+                    style={styles.expenseCategory}
+                    value={expenseCategory}
+                    onChangeText={setExpenseCategory}
+                    placeholder="Category"
+                    color={'#1D3557'}
+                />
+            </KeyboardAvoidingView>
         )
     }
 
     function renderDateUI() {
         return (
-            <KeyboardAvoidingView style={styles.DateContainer} behavior={"padding"} enabled={true} keyboardVerticalOffset={150}>
+            <KeyboardAvoidingView style={styles.DateContainer} behavior={"padding"} enabled={true}
+                                  keyboardVerticalOffset={150}>
 
                 {!showDatePicker && (
                     <Pressable
@@ -210,7 +213,7 @@ const Dashboard = ({ navigation, route }) => {
 
                 {showDatePicker && (
                     <DateTimePicker
-                        mode = "date"
+                        mode="date"
                         display={"spinner"}
                         value={selectedDate}
                         onChange={onChange}
@@ -404,7 +407,7 @@ const styles = StyleSheet.create({
         fontWeight: '500',
         color: '#fff'
     },
-    button:{
+    button: {
         height: 35,
         width: 75,
         justifyContent: "center",
@@ -414,7 +417,7 @@ const styles = StyleSheet.create({
         marginBottom: 15,
         backgroundColor: "#075985"
     },
-    buttonContainer:{
+    buttonContainer: {
         flexDirection: 'column',
     }
 });
