@@ -7,7 +7,7 @@ const Verification = ({ navigation, route }) => {
 
   const handleCode = async () => {
     try {
-      const response = await fetch('http://192.168.2.11:3000/verify', {
+      const response = await fetch('http://127.0.0.1:3000/verify', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -23,7 +23,7 @@ const Verification = ({ navigation, route }) => {
 
       if (message.message === "Account created successfully!") {
         // handle successful login, e.g., navigate to a dashboard
-        navigation.navigate('Dashboard');  
+        navigation.navigate('Dashboard', { email: email });
       } else {
         // handle unsuccessful login, e.g., display an error message
         alert(message);  

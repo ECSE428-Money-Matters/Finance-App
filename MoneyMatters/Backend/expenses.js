@@ -34,7 +34,6 @@ router.post('/add_expense', async (req, res) => {
         if (!optional_description) {
             optional_description = "N/A";
         }
-
         // Check if date is in the future
         const currentDate = new Date();
         const providedDate = new Date(posted_date);
@@ -66,7 +65,7 @@ router.get('/view_expense', async (req, res) => {
     try {
         const { email } = req.body;
         const { month } = req.query; // Extracting the 'month' query parameter
-        
+       
         if (!email) {
             return res.status(400).json({ error: 'Email is required.' });
         }
@@ -88,5 +87,5 @@ router.get('/view_expense', async (req, res) => {
 });
 
 
-
 module.exports = router;
+

@@ -6,27 +6,27 @@ const app = require('./index.js');
 
 router.post("/login", async (req, res) => {
     try {
-        const { username, password } = req.body;
+        const { email, password } = req.body;
 
-        if (loginAttempts[username] >= 3) {
+        if (loginAttempts[email] >= 3) {
             return res.json("Too many login attempts. Select 'Forgot Password' to proceed.");
         }
 
-        const user = await pool.query("SELECT * FROM users WHERE username = $1", [username]);
+        const user = await pool.query("SELECT * FROM users WHERE email = $1", [email]);
 
         if (user.rows == null || user.rows.length === 0) {
-            return res.json("Username not found");
+            return res.json("Email not found");
         }
 
         console.log(user.rows[0]);
 
-        if (user.rows[0].hashed_password !== password) {
-            loginAttempts[username] = (loginAttempts[username] || 0) + 1;
+        if (user.rows[0].hashed_password != password) {
+            loginAttempts[email] = (loginAttempts[email] || 0) + 1;
             return res.json("Invalid password");
         }
 
         // Reset login attempts
-        loginAttempts[username] = 0;
+        loginAttempts[email] = 0;
 
         res.json("Login successful");
 
