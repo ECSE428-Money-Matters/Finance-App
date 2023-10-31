@@ -2,11 +2,6 @@
 
 -- To Create a table:
 
-CREATE TABLE IF NOT EXISTS exampletable(
-    example_id SERIAL PRIMARY KEY,
-    description VARCHAR(255) -- Text field of max 255 characters
-);
-
 -- Users Table:
 CREATE TABLE IF NOT EXISTS users(
     user_id SERIAL PRIMARY KEY,
@@ -15,7 +10,7 @@ CREATE TABLE IF NOT EXISTS users(
     hashed_password VARCHAR(60) NOT NULL
 );
 
-CREATE TABLE accountrecovery(
+CREATE TABLE IF NOT EXISTS accountrecovery(
     accountrecoveryid UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     email VARCHAR(255),
     username VARCHAR(255),
