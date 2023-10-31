@@ -4,12 +4,16 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "NODE_ENV=test jest"
+  },
+  "jest": {
+    "testEnvironment": "node"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@jest/globals": "^29.7.0",
     "bcrypt": "^5.1.1",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
@@ -17,9 +21,13 @@
     "nodejs-nodemailer-outlook": "^1.2.4",
     "nodemailer": "^6.9.6",
     "pg": "^8.11.3",
-    "superagent": "^8.1.2"
+    "pg-promise": "^11.5.4",
+    "sinon": "^17.0.0",
+    "superagent": "^8.1.2",
+    "supertest": "^6.3.3"
   },
   "devDependencies": {
+    "jest": "^29.7.0",
     "nodemon": "^3.0.1"
   }
 }

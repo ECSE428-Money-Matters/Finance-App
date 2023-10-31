@@ -8,7 +8,12 @@ const app = require('./index.js');
 router.post('/add_expense', async (req, res) => {
     console.log("adding an expense");
     try {
-        const { email, expense_name, amount, posted_date, category, optional_description } = req.body;
+        let { email, expense_name, amount, posted_date, category, optional_description } = req.body;
+
+        // Check for zero dollars
+        if (amount === 0) {
+            return res.status(400).json({ error: 'Amount cannot be zero dollars.' });
+        }
 
         // No empty fields
         if (!email || !expense_name ||  !amount || !posted_date || !category) {
@@ -25,16 +30,10 @@ router.post('/add_expense', async (req, res) => {
             return res.status(400).json({ error: 'Invalid amount. Amount should be a positive number.' });
         }
 
-        // Check for zero dollars
-        if (amount == 0) {
-            return res.status(400).json({ error: 'Amount cannot be zero dollars.' });
-        }
-
         // avoid empty columns in db
-        // if (!optional_description) {
-        //     optional_description = "N/A";
-        // }
-
+        if (!optional_description) {
+            optional_description = "N/A";
+        }
         // Check if date is in the future
         const currentDate = new Date();
         const providedDate = new Date(posted_date);
@@ -44,9 +43,9 @@ router.post('/add_expense', async (req, res) => {
 
         // add to expenses table
         const result = await pool.query(
-            "INSERT INTO expenses (email, expense_name, amount, posted_date, category, optional_description) VALUES($1, $2, $3, $4, $5, $6) RETURNING *", 
+            "INSERT INTO expenses (email, expense_name, amount, posted_date, category, optional_description) VALUES($1, $2, $3, $4, $5, $6) RETURNING *",
             [email, expense_name, amount, posted_date, category, optional_description]
-        );  
+        );
 
         if (result.rows.length > 0) {
             console.log(`Expense added successfully.`);
@@ -60,13 +59,23 @@ router.post('/add_expense', async (req, res) => {
     }
 });
 
+// Junaid: Edited this slightly to account for viewing expenses using future date selections
 router.get('/view_expense', async (req, res) => {
     console.log("viewing expenses for a user");
     try {
-        const { email } = req.query;
-
+        const { email } = req.body;
+        const { month } = req.query; // Extracting the 'month' query parameter
+       
         if (!email) {
             return res.status(400).json({ error: 'Email is required.' });
+        }
+
+        // Check if the 'month' query parameter exists and is a future date
+        if (month) {
+            const currentMonth = new Date().toISOString().slice(0, 7);
+            if (month > currentMonth) {
+                return res.status(400).json({ message: 'No expenses found for the selected month' });
+            }
         }
 
         const userExpenses = await pool.query("SELECT * FROM expenses WHERE email = $1", [email]);
@@ -77,4 +86,6 @@ router.get('/view_expense', async (req, res) => {
     }
 });
 
+
 module.exports = router;
+

@@ -49,6 +49,9 @@ async function sendVerificationEmail(toEmail, code) {
   );
 }
 
+module.exports.sendVerificationEmail = sendVerificationEmail;
+
+
 // Step 2: Implement the user account creation process
 // Create the endpoint to handle user registration:
 const verificationData = {};  // Temporary storage for verification codes and password
@@ -76,10 +79,18 @@ router.post('/register', async (req, res) => {
     const code = Math.floor(100000 + Math.random() * 900000);
     verificationData[email] = { code, username, password };
 
-    // Send the verification email
     await sendVerificationEmail(email, code);
 
-    res.json({ message: 'Verification code sent to email. Please verify to complete registration.' });
+    // If in test environment, return the verification code in the response
+    if (process.env.NODE_ENV === 'test') {
+      return res.json({
+        verificationCode: code, // This will be used in the test environment only
+        message: 'Verification code sent to email. Please verify to complete registration.'
+
+      });
+    }
+
+    else {res.json({ message: 'Verification code sent to email. Please verify to complete registration.' });}
 
   } catch (error) {
     console.error('Error in registration:', error);

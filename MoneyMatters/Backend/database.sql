@@ -28,7 +28,6 @@ CREATE TABLE IF NOT EXISTS expenses(
     category VARCHAR(255) NOT NULL,
     optional_description VARCHAR(255)
 );
-
 -- Permissions Grants, must be last for permissions to be granted to every newly created tables
 GRANT ALL ON DATABASE "moneymatters" TO "moneymatters";
 
