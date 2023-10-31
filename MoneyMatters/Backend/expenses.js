@@ -31,9 +31,9 @@ router.post('/add_expense', async (req, res) => {
         }
 
         // avoid empty columns in db
-        if (!optional_description) {
-            optional_description = "N/A";
-        }
+        // if (!optional_description) {
+        //     optional_description = "N/A";
+        // }
 
         // Check if date is in the future
         const currentDate = new Date();

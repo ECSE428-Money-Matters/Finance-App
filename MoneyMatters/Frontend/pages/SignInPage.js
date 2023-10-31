@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, StyleSheet, TextInput, Button, Text } from 'react-native';
 
 const SignInPage = ({ navigation }) => {  
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   const handleSignIn = async () => {
@@ -13,7 +13,7 @@ const SignInPage = ({ navigation }) => {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          username: username,
+          email: email,
           password: password
         })
       });
@@ -23,7 +23,7 @@ const SignInPage = ({ navigation }) => {
 
       if (message === "Login successful") {
         // handle successful login, e.g., navigate to a dashboard
-        navigation.navigate('Dashboard');  
+        navigation.navigate('Dashboard', { email: email });
       } else {
         // handle unsuccessful login, e.g., display an error message
         alert(message);  
@@ -45,12 +45,12 @@ const SignInPage = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.label}>Username:</Text>
+      <Text style={styles.label}>Email:</Text>
       <TextInput 
         style={styles.input} 
-        value={username}
-        onChangeText={setUsername}
-        placeholder="Enter your username"
+        value={email}
+        onChangeText={setEmail}
+        placeholder="Enter your email"
         keyboardType="email-address"
         autoCapitalize="none"
       />

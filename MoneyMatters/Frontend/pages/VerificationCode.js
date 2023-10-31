@@ -23,7 +23,7 @@ const Verification = ({ navigation, route }) => {
 
       if (message.message === "Account created successfully!") {
         // handle successful login, e.g., navigate to a dashboard
-        navigation.navigate('Dashboard');  
+        navigation.navigate('Dashboard', { email: email });
       } else {
         // handle unsuccessful login, e.g., display an error message
         alert(message);  
