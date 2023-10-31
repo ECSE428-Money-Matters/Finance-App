@@ -22,7 +22,7 @@ describe('Viewing Expenses', () => {
             { expense_name: 'Expense 2', amount: 200, category: 'Transportation' },
         ];
         dbStub.returns(Promise.resolve({ rows: expenses }));
-        const res = await request(app).get('/view_expenses');
+        const res = await request(app).get('/view_expense').send({ email: 'test@example.com' });
         expect(res.status).toBe(200);
         expect(res.body.length).toBe(expenses.length);
     });
@@ -31,8 +31,7 @@ describe('Viewing Expenses', () => {
         // Simulate a scenario where there are no expenses in the database
         dbStub.returns(Promise.resolve({ rows: [] }));
 
-        const res = await request(app).get('/view_expenses');
-
+        const res = await request(app).get('/view_expense').send({ email: 'test@example.com' });
         expect(res.status).toBe(200);
         expect(res.body.length).toBe(0);
     });
@@ -47,7 +46,7 @@ describe('Viewing Expenses', () => {
 
         dbStub.returns(Promise.resolve({ rows: expenses }));
 
-        const res = await request(app).get(`/view_expenses?category=${categoryToFilter}`);
+        const res = await request(app).get(`/view_expense?category=${categoryToFilter}`).send({ email: 'test@example.com' });;
 
         expect(res.status).toBe(200);
         expect(res.body.length).toBe(expenses.length);
@@ -65,7 +64,7 @@ describe('Viewing Expenses', () => {
 
         dbStub.returns(Promise.resolve({ rows: expenses }));
 
-        const res = await request(app).get(`/view_expenses?start_date=${startDate}&end_date=${endDate}`);
+        const res = await request(app).get(`/view_expense?start_date=${startDate}&end_date=${endDate}`).send({ email: 'test@example.com' });;
 
         expect(res.status).toBe(200);
         expect(res.body.length).toBe(expenses.length);
@@ -86,7 +85,7 @@ describe('Viewing Expenses', () => {
 
         dbStub.returns(Promise.resolve({ rows: expenses }));
 
-        const res = await request(app).get(`/view_expenses?amount_greater_than=${thresholdAmount}`);
+        const res = await request(app).get(`/view_expense?amount_greater_than=${thresholdAmount}`).send({ email: 'test@example.com' });;
 
         expect(res.status).toBe(200);
         expect(res.body.length).toBe(expenses.length);
@@ -97,7 +96,7 @@ describe('Viewing Expenses', () => {
         const futureMonth = '2025-04';
         dbStub.returns(Promise.resolve({ rows: [] }));
 
-        const res = await request(app).get(`/view_expenses?month=${futureMonth}`);
+        const res = await request(app).get(`/view_expense?month=${futureMonth}`).send({ email: 'test@example.com' });;
 
         expect(res.status).toBe(400); // Assuming the server returns a 400 Bad Request status for invalid inputs.
         expect(res.body.message).toBe("No expenses found for the selected month");

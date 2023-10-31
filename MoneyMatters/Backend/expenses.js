@@ -60,13 +60,23 @@ router.post('/add_expense', async (req, res) => {
     }
 });
 
+// Junaid: Edited this slightly to account for viewing expenses using future date selections
 router.get('/view_expense', async (req, res) => {
     console.log("viewing expenses for a user");
     try {
         const { email } = req.body;
-
+        const { month } = req.query; // Extracting the 'month' query parameter
+        
         if (!email) {
             return res.status(400).json({ error: 'Email is required.' });
+        }
+
+        // Check if the 'month' query parameter exists and is a future date
+        if (month) {
+            const currentMonth = new Date().toISOString().slice(0, 7);
+            if (month > currentMonth) {
+                return res.status(400).json({ message: 'No expenses found for the selected month' });
+            }
         }
 
         const userExpenses = await pool.query("SELECT * FROM expenses WHERE email = $1", [email]);
@@ -76,5 +86,7 @@ router.get('/view_expense', async (req, res) => {
         console.error(err.message);
     }
 });
+
+
 
 module.exports = router;
