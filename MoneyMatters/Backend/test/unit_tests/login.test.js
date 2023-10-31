@@ -58,7 +58,7 @@ describe('login automated tests', () => {
         const res = await request(app).post('/login').send({ username, password });
 
         expect(res.status).toBe(200);
-        expect(res.body).toBe('Username not found');
+        expect(res.body).toBe('Email not found');
     });
 
     test('exceeding login attempts', async () => {
