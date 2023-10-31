@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
     View,
     StyleSheet,
@@ -67,42 +67,25 @@ const Dashboard = ({ navigation, route }) => {
         handleAddExpense();
         clearText();
         Keyboard.dismiss();
-    }
+    };
+
+    useEffect(() => {
+        handleViewExpense();
+    }, []);
 
     const handleViewExpense = async () => {
         try {
-            console.log("Added expense");
-            console.log("Description: " + expenseDescription);
-            console.log("Amount: " + expenseAmount);
-            const newExpense = {
-                id: new Date().getTime(),
-                expenseName: expenseDescription,
-                amount: expenseAmount,
-            };
             //setExpenses([...expenses, newExpense]);
-            const response = await fetch('http://127.0.0.1:3000/add_expense', {
-                method: 'POST',
+            const response = await fetch(`http://127.0.0.1:3000/view_expense?email=${route.params.email}`, {
+                method: 'GET',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({
-                    email: route.params.email,
-                    expense_name: expenseDescription,
-                    amount: expenseAmount,
-                    category: expenseCategory,
-                    posted_date: expenseDate
-                })
             });
 
             const responseBody = await response.text();
             const message = JSON.parse(responseBody); // Parse the JSON response
-            if (message.message === "Expense added successfully.") {
-                // handle successful login, e.g., navigate to a dashboard
-                navigation.navigate('Dashboard');
-            } else {
-                // handle unsuccessful login, e.g., display an error message
-                alert(message.error);
-            }
+            setExpenses(message);
         } catch (error) {
             // handle error, e.g., network error or server error
             // console.error("Error adding expense:", error);
@@ -111,14 +94,6 @@ const Dashboard = ({ navigation, route }) => {
 
     const handleAddExpense = async () => {
         try {
-            console.log("Added expense");
-            console.log("Description: " + expenseDescription);
-            console.log("Amount: " + expenseAmount);
-            const newExpense = {
-                id: new Date().getTime(),
-                expenseName: expenseDescription,
-                amount: expenseAmount,
-            };
             //setExpenses([...expenses, newExpense]);
             const response = await fetch('http://127.0.0.1:3000/add_expense', {
                 method: 'POST',
@@ -138,11 +113,13 @@ const Dashboard = ({ navigation, route }) => {
             const message = JSON.parse(responseBody); // Parse the JSON response
             if (message.message === "Expense added successfully.") {
                 // handle successful login, e.g., navigate to a dashboard
-                navigation.navigate('Dashboard');
+                //navigation.navigate('Dashboard');
             } else {
                 // handle unsuccessful login, e.g., display an error message
                 alert(message.error);
             }
+
+            handleViewExpense();
         } catch (error) {
             // handle error, e.g., network error or server error
             // console.error("Error adding expense:", error);
@@ -163,9 +140,8 @@ const Dashboard = ({ navigation, route }) => {
         return (
             <ScrollView>
                 <View style={styles.expenses}>
-                    <Expense desc={'Ex1'} amt={25}/>
                     {expenses.map((expense) => (
-                        <Expense desc={expense.expenseName} amt={expense.amount} key={expense.id}/>
+                        <Expense desc={expense.expense_name} amt={expense.amount} key={expense.expense_id}/>
                     ))}
                 </View>
             </ScrollView>
