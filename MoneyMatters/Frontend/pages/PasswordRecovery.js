@@ -1,40 +1,27 @@
-import React, { useState } from "react";
-import { View, StyleSheet, TextInput, Button, Text } from "react-native";
-import * as Linking from "expo-linking";
-const PasswordRecovery = ({ navigation }) => {
-  const [email, setEmail] = useState("");
+import React, { useState } from 'react';
+import { View, StyleSheet, TextInput, Button, Text } from 'react-native';
+
+const PasswordRecovery = ({ navigation }) => {  
+  const [email, setEmail] = useState('');
 
   const handlePasswordRecovery = async () => {
     try {
-      const requrl = Linking.createURL();
-      var hostname = requrl.split(":");
-      hostname.pop();
-      hostname = hostname.join("");
-      hostname = hostname.split("//");
-      hostname.shift();
-      hostname = hostname.join("");
-      const url = "http://" + hostname + ":3000" + "/recover";
-      console.log("Requesting at " + url);
-      const response = await fetch(url, {
-        method: "POST",
+      const response = await fetch('http://127.0.0.1:3000/passwordRecovery', {
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({
           email: email,
-          url: requrl,
-        }),
+        })
       });
-
-      const resBody = await response.text();
-      const message = JSON.parse(resBody);
-      console.log(message);
-
-      if (message == "Password recovery successfully requested") {
+      
+      const message = await response.text();
+  
+      if (message === "Password recovery email sent") {
         alert("Check your email for password recovery instructions!");
-        navigation.navigate("SignIn");
       } else {
-        alert(message);
+        alert(message);  
       }
     } catch (error) {
       console.error("Error during password recovery:", error);
@@ -45,8 +32,8 @@ const PasswordRecovery = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <Text style={styles.label}>Email:</Text>
-      <TextInput
-        style={styles.input}
+      <TextInput 
+        style={styles.input} 
         value={email}
         onChangeText={setEmail}
         placeholder="Enter your email linked to your account"
@@ -66,7 +53,7 @@ const PasswordRecovery = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
+    justifyContent: 'center',
     paddingHorizontal: 15,
   },
   label: {
@@ -75,16 +62,16 @@ const styles = StyleSheet.create({
   },
   input: {
     borderWidth: 1,
-    borderColor: "#ccc",
+    borderColor: '#ccc',
     padding: 8,
     marginBottom: 15,
     borderRadius: 5,
   },
   linkText: {
-    color: "blue",
-    textAlign: "center",
+    color: 'blue',
+    textAlign: 'center',
     marginTop: 10,
-    textDecorationLine: "underline",
+    textDecorationLine: 'underline',
   },
 });
 
