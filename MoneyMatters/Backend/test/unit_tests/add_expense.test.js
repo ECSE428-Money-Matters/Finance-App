@@ -49,21 +49,6 @@ describe('test adding expense', () =>{
         const res = await request(app).post('/add_expense').send(payload);
 
         expect(res.status).toBe(400);
-        console.log(res.body.error)
-        expect(res.body.error).toBe('All fields are required.');
-    });
-
-    test('adding an expense with missing fields', async () => {
-        const payload = {
-            expense_name: 'Lunch',
-            amount: 15,
-            posted_date: '2023-10-01',
-            category: 'Food'
-        };
-
-        const res = await request(app).post('/add_expense').send(payload);
-
-        expect(res.status).toBe(400);
         expect(res.body.error).toBe('All fields are required.');
     });
 

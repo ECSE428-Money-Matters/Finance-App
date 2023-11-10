@@ -56,7 +56,7 @@ router.post("/recover", async (req,res) => {
             },
             from: 'moneymattershere@outlook.com',
             to: email,
-            subject: 'Your recovery code for MoneyMatters',
+            subject: 'Your recovery code for MoneyMatters App',
             html: message,
             onError: (e) => console.log(e),
             onSuccess: (i) => console.log(i)
