@@ -63,14 +63,12 @@ router.post('/add_expense', async (req, res) => {
 router.get('/view_expense', async (req, res) => {
     console.log("viewing expenses for a user");
     try {
-        const { email } = req.query;
-        const { month } = req.query; // Extracting the 'month' query parameter
-       
+        const { email, month, category } = req.query;
+
         if (!email) {
             return res.status(400).json({ error: 'Email is required.' });
         }
 
-        // Check if the 'month' query parameter exists and is a future date
         if (month) {
             const currentMonth = new Date().toISOString().slice(0, 7);
             if (month > currentMonth) {
@@ -78,7 +76,15 @@ router.get('/view_expense', async (req, res) => {
             }
         }
 
-        const userExpenses = await pool.query("SELECT * FROM expenses WHERE email = $1", [email]);
+        let query = "SELECT * FROM expenses WHERE email = $1";
+        let queryParams = [email];
+
+        if (category) {
+            query += " AND category = $2";
+            queryParams.push(category);
+        }
+
+        const userExpenses = await pool.query(query, queryParams);
         res.json(userExpenses.rows);
 
     } catch (err) {
@@ -87,5 +93,5 @@ router.get('/view_expense', async (req, res) => {
 });
 
 
-module.exports = router;
 
+module.exports = router;

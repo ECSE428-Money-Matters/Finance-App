@@ -6,24 +6,42 @@ import {
     Button,
     Text,
     TouchableOpacity,
-    KeyboardAvoidingView,
     Keyboard, ScrollView, Pressable, Platform
 } from 'react-native';
 import {Colors} from "react-native/Libraries/NewAppScreen";
 import Expense from "../components/Expense";
-import DateTimePicker from "@react-native-community/datetimepicker";
+import Modal from "react-native-modal";
 import {useFocusEffect} from "@react-navigation/native";
+import { FilterPopUp } from "../components/FilterPopUp";
+import DropDownPicker from "react-native-dropdown-picker";
+
 
 const Dashboard = ({navigation, route}) => {
-    // const { email } = route.params;
-    // const [expenseDescription, setExpenseDescription] = useState('');
-    // const [expenseAmount, setExpenseAmount] = useState('');
-    // const [expenseCategory, setExpenseCategory] = useState('');
-    // const [expenseDate, setExpenseDate] = useState('');
-    // const [selectedDate, setSelectedDate] = useState(new Date());
-    // const [showDatePicker, setShowDatePicker] = useState(false);
     const [expenses, setExpenses] = useState([]);
+    const [open, setOpen] = useState(false);
+    const [value, setValue] = useState('All');
+    const [categoryLabel, setCategoryLabel] = useState('All');
+    const [items, setItems] = useState([
+        {label: 'All', value: 'All'},
+        {label: 'Housing', value: 'Housing'},
+        {label: 'Transportation', value: 'Transportation'},
+        {label: 'Food & Dining', value: 'Food%20%26%20Dining'},
+        {label: 'Entertainment', value: 'Entertainment'},
+        {label: 'Health', value: 'Health'},
+        {label: 'Other', value: 'Other'},
+    ]);
+    const [isModalVisible, setIsModalVisible] = React.useState(false);
 
+    // const handleModal = () => setIsModalVisible(() => !isModalVisible);
+    const handleModal = () => {
+        if(value === 'Food%20%26%20Dining'){
+            setCategoryLabel('Food & Dining');
+        }else{
+            setCategoryLabel(value);
+        }
+        setIsModalVisible(() => !isModalVisible)
+        handleViewExpense();
+    };
 
     useFocusEffect(
         React.useCallback(() => {
@@ -40,16 +58,29 @@ const Dashboard = ({navigation, route}) => {
         console.log("GETTING EXPENSES");
         try {
             //setExpenses([...expenses, newExpense]);
-            const response = await fetch(`http://127.0.0.1:3000/view_expense?email=${route.params.email}`, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-            });
-
-            const responseBody = await response.text();
-            const message = JSON.parse(responseBody); // Parse the JSON response
-            setExpenses(message);
+            if (value === 'All'){
+                console.log("VALUE NONE")
+                const response = await fetch(`http://127.0.0.1:3000/view_expense?email=${route.params.email}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                });
+                const responseBody = await response.text();
+                const message = JSON.parse(responseBody); // Parse the JSON response
+                setExpenses(message);
+            }else{
+                console.log("VALUE: " + value)
+                const response = await fetch(`http://127.0.0.1:3000/view_expense?email=${route.params.email}&category=${value}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                });
+                const responseBody = await response.text();
+                const message = JSON.parse(responseBody); // Parse the JSON response
+                setExpenses(message);
+            }
         } catch (error) {
             // handle error, e.g., network error or server error
             // console.error("Error adding expense:", error);
@@ -62,12 +93,39 @@ const Dashboard = ({navigation, route}) => {
                 <View>
                     <Text style={styles.header}>My Expenses</Text>
                     <Text style={styles.subheader}>Summary</Text>
+                    <Text style={styles.subheader2}>{categoryLabel}</Text>
                 </View>
 
                 <View>
                     <TouchableOpacity style={styles.button} onPress={addExpense}>
                         <Text style={styles.buttonText}>Add</Text>
                     </TouchableOpacity>
+
+                    <TouchableOpacity style={styles.button} onPress={handleModal}>
+                        <Text style={styles.buttonText}>Filter</Text>
+                    </TouchableOpacity>
+                    <FilterPopUp isVisible={isModalVisible}>
+                        <FilterPopUp.Container>
+                            <FilterPopUp.Header title="Filter Category" />
+                            <FilterPopUp.Body>
+                                <DropDownPicker
+                                    open={open}
+                                    value={value}
+                                    items={items}
+                                    setOpen={setOpen}
+                                    setValue={setValue}
+                                    setItems={setItems}
+                                    placeholder="Filter"
+                                    theme="DARK"
+                                />
+                            </FilterPopUp.Body>
+                            <FilterPopUp.Footer>
+                                <TouchableOpacity style={styles.buttonFilter} onPress={handleModal}>
+                                    <Text style={styles.buttonText}>OK</Text>
+                                </TouchableOpacity>
+                            </FilterPopUp.Footer>
+                        </FilterPopUp.Container>
+                    </FilterPopUp>
                 </View>
             </View>
         )
@@ -124,6 +182,10 @@ const styles = StyleSheet.create({
         color: '#1D3557',
         fontSize: 20
     },
+    subheader2: {
+        color: '#457B9D',
+        fontSize: 20
+    },
     expenses: {
         paddingVertical: 20,
         zIndex: 0
@@ -131,6 +193,16 @@ const styles = StyleSheet.create({
     button: {
         height: 35,
         width: 75,
+        justifyContent: "center",
+        alignItems: "center",
+        borderRadius: 50,
+        marginTop: 10,
+        marginBottom: 15,
+        backgroundColor: "#075985"
+    },
+    buttonFilter: {
+        height: 35,
+        width: '100%',
         justifyContent: "center",
         alignItems: "center",
         borderRadius: 50,
