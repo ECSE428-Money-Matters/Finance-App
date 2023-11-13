@@ -64,7 +64,7 @@ router.get('/view_expense', async (req, res) => {
     console.log("viewing expenses for a user");
     try {
         const { email, month, category } = req.query;
-
+      
         if (!email) {
             return res.status(400).json({ error: 'Email is required.' });
         }
@@ -91,7 +91,5 @@ router.get('/view_expense', async (req, res) => {
         console.error(err.message);
     }
 });
-
-
 
 module.exports = router;
