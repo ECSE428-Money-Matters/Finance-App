@@ -45,6 +45,7 @@ const SignInPage = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
+      <Text style={styles.title}>Welcome to MoneyMatters</Text>
       <Text style={styles.label}>Email:</Text>
       <TextInput 
         style={styles.input} 
@@ -100,6 +101,11 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 10,
     textDecorationLine: 'underline',
+  },
+  title: {
+    fontSize: 24, // Adjust the font size as needed
+    textAlign: 'center',
+    marginBottom: 20, // Adjust the margin as needed
   },
 });
 
