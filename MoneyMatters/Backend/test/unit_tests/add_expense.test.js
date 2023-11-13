@@ -143,4 +143,20 @@ describe('test adding expense', () =>{
         console.log(res.body.error)
         expect(res.body.error).toBe('Date cannot be in the future.');
     });
+
+    //
+    test('adding an expense with invalid category', async () => {
+        const payload = {
+            email: 'test@example.com',
+            expense_name: 'Lunch',
+            amount: 15,
+            posted_date: '2023-10-01',
+            category: 'InvalidCategory'  // Invalid category
+        };
+    
+        const res = await request(app).post('/add_expense').send(payload);
+    
+        expect(res.status).toBe(400);
+        expect(res.body.error).toBe('Invalid category.');
+    });
 });
