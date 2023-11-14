@@ -92,12 +92,15 @@ router.get("/incomes", async (req, res) => {
       return res.status(400).json({ error: "Email is required." });
     }
 
-    const queryInput =
+    var queryInput =
       "SELECT * FROM incomes WHERE email = $1 AND " +
       column_name +
       " >= $2 AND " +
       column_name +
       " <= $3 ";
+    //If column_name = "None", then query without filtering
+    if (column_name === "None")
+      queryInput = "SELECT * FROM incomes WHERE email = $1";
     const userIncomes = await pool.query(queryInput, [
       email,
       column_value_start,
