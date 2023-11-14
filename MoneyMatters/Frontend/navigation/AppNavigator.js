@@ -42,6 +42,11 @@ const AppNavigator = () => {
             component={createExpensePage}
             options={{headerShown: false }}
         />
+        <Stack.Screen
+            name="CreateIncome"
+            component={createIncomePage}
+            options={{headerShown: false }}
+        />
     </Stack.Navigator>
   );
 };
