@@ -6,12 +6,13 @@ import PasswordRecovery from "../pages/PasswordRecovery";
 import VerificationCode from "../pages/VerificationCode";
 import Dashboard from "../pages/Dashboard";
 import createExpensePage from "../pages/CreateExpensePage";
+import CreateIncomePage from "../pages/CreateIncomePage";
 
 const Stack = createStackNavigator();
 
 const AppNavigator = () => {
   return (
-    <Stack.Navigator initialRouteName="SignUp">
+    <Stack.Navigator initialRouteName="CreateIncome">
       <Stack.Screen
         name="SignIn"
         component={SignInPage}
@@ -44,7 +45,7 @@ const AppNavigator = () => {
         />
         <Stack.Screen
             name="CreateIncome"
-            component={createIncomePage}
+            component={CreateIncomePage}
             options={{headerShown: false }}
         />
     </Stack.Navigator>

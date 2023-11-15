@@ -14,7 +14,7 @@ import Income from "../components/Income";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import Category from "../components/Category";
 
-const CreateIncome = ({navigation, route}) => {
+const CreateIncomePage = ({navigation, route}) => {
     // const { email } = route.params;
     const [incomeDescription, setIncomeDescription] = useState('');
     const [incomeAmount, setIncomeAmount] = useState('');
@@ -65,16 +65,14 @@ const CreateIncome = ({navigation, route}) => {
 
             const responseBody = await response.text();
             const message = JSON.parse(responseBody); // Parse the JSON response
-            if (message.message === "Income added successfully.") {
-                // handle successful login, e.g., navigate to a dashboard
-                //navigation.navigate('Dashboard');
-            } else {
+            if (message.message !== "Income added successfully.") {
+
                 // handle unsuccessful login, e.g., display an error message
                 alert(message.error);
             }
         } catch (error) {
             // handle error, e.g., network error or server error
-            // console.error("Error adding Income:", error);
+            alert(error);
         }
     };
 
@@ -85,16 +83,12 @@ const CreateIncome = ({navigation, route}) => {
                     <Text style={styles.header}>Add Income</Text>
                 </View>
                 <View style={styles.CategoriesContainer}>
-                    <Category desc={"Housing"} onSelect={(isSelected) => handleCategorySelect(isSelected)}
-                              isSelected={selectedCategory === "Housing"}/>
-                    <Category desc={"Transportation"} onSelect={(isSelected) => handleCategorySelect(isSelected)}
-                              isSelected={selectedCategory === "Transportation"}/>
-                    <Category desc={"Food & Dining"} onSelect={(isSelected) => handleCategorySelect(isSelected)}
-                              isSelected={selectedCategory === "Food & Dining"}/>
-                    <Category desc={"Entertainment"} onSelect={(isSelected) => handleCategorySelect(isSelected)}
-                              isSelected={selectedCategory === "Entertainment"}/>
-                    <Category desc={"Health"} onSelect={(isSelected) => handleCategorySelect(isSelected)}
-                              isSelected={selectedCategory === "Health"}/>
+                    <Category desc={"Salary"} onSelect={(isSelected) => handleCategorySelect(isSelected)}
+                              isSelected={selectedCategory === "Salary"}/>
+                    <Category desc={"Freelance Work"} onSelect={(isSelected) => handleCategorySelect(isSelected)}
+                              isSelected={selectedCategory === "Freelance Work"}/>
+                    <Category desc={"Investment"} onSelect={(isSelected) => handleCategorySelect(isSelected)}
+                              isSelected={selectedCategory === "Investment"}/>
                     <Category desc={"Other"} onSelect={(isSelected) => handleCategorySelect(isSelected)}
                               isSelected={selectedCategory === "Other"}/>
                 </View>
@@ -226,6 +220,10 @@ const styles = StyleSheet.create({
         fontWeight: '500',
         color: '#075985'
     },
+    // TODO: STYLE CONTAINERS?
+    incomeContainer: undefined,
+    incomeDescription: undefined
+
 });
 
-export default CreateIncome;
+export default CreateIncomePage;
