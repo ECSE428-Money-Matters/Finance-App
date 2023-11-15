@@ -60,7 +60,7 @@ const Dashboard = ({navigation, route}) => {
             //setExpenses([...expenses, newExpense]);
             if (value === 'All'){
                 console.log("VALUE NONE")
-                const response = await fetch(`http://127.0.0.1:3000/view_expense?email=${route.params.email}`, {
+                const response = await fetch(`http://192.168.2.11:3000/view_expense?email=${route.params.email}`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json'
