@@ -164,19 +164,19 @@ module.exports = router;
 //     }
 //   });
 
-superagent
-  .get("http://127.0.0.1:3000/incomes")
-  .send({
-    email: "qi.chen6@mail.mcgill.ca",
-    column_name: "income_period",
-    column_value_start: "1",
-    column_value_end: "99",
-  })
-  .end((err, res) => {
-    if (err) {
-      console.log("Get error = ", err);
-    } else {
-      console.log("Get response = ", res.status);
-      console.log(res.body);
-    }
-  });
+// superagent
+//   .get("http://127.0.0.1:3000/incomes")
+//   .send({
+//     email: "qi.chen6@mail.mcgill.ca",
+//     column_name: "income_period",
+//     column_value_start: "1",
+//     column_value_end: "99",
+//   })
+//   .end((err, res) => {
+//     if (err) {
+//       console.log("Get error = ", err);
+//     } else {
+//       console.log("Get response = ", res.status);
+//       console.log(res.body);
+//     }
+//   });
