@@ -23,11 +23,11 @@
     "pg": "^8.11.3",
     "pg-promise": "^11.5.4",
     "sinon": "^17.0.0",
-    "superagent": "^8.1.2",
-    "supertest": "^6.3.3"
+    "superagent": "^8.1.2"
   },
   "devDependencies": {
     "jest": "^29.7.0",
-    "nodemon": "^3.0.1"
+    "nodemon": "^3.0.1",
+    "supertest": "^6.3.3"
   }
 }
