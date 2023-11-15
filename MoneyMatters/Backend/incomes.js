@@ -92,20 +92,27 @@ router.get("/incomes", async (req, res) => {
       return res.status(400).json({ error: "Email is required." });
     }
 
-    var queryInput =
-      "SELECT * FROM incomes WHERE email = $1 AND " +
-      column_name +
-      " >= $2 AND " +
-      column_name +
-      " <= $3 ";
+    var queryInput;
+    var userIncomes;
+
     //If column_name = "None", then query without filtering
-    if (column_name === "None")
+    if (column_name === "None") {
       queryInput = "SELECT * FROM incomes WHERE email = $1";
-    const userIncomes = await pool.query(queryInput, [
-      email,
-      column_value_start,
-      column_value_end,
-    ]);
+      userIncomes = await pool.query(queryInput, [email]);
+    } else {
+      queryInput =
+        "SELECT * FROM incomes WHERE email = $1 AND " +
+        column_name +
+        " >= $2 AND " +
+        column_name +
+        " <= $3 ";
+      userIncomes = await pool.query(queryInput, [
+        email,
+        column_value_start,
+        column_value_end,
+      ]);
+    }
+
     console.log("Filtered income");
     console.log(userIncomes.rows);
     res.json(userIncomes.rows);
@@ -157,19 +164,19 @@ module.exports = router;
 //     }
 //   });
 
-// superagent
-//   .get("http://127.0.0.1:3000/incomes")
-//   .send({
-//     email: "qi.chen6@mail.mcgill.ca",
-//     column_name: "income_period",
-//     column_value_start: "1",
-//     column_value_end: "1",
-//   })
-//   .end((err, res) => {
-//     if (err) {
-//       console.log("Get error = ", err);
-//     } else {
-//       console.log("Get response = ", res.status);
-//       console.log(res.body);
-//     }
-//   });
+superagent
+  .get("http://127.0.0.1:3000/incomes")
+  .send({
+    email: "qi.chen6@mail.mcgill.ca",
+    column_name: "income_period",
+    column_value_start: "1",
+    column_value_end: "99",
+  })
+  .end((err, res) => {
+    if (err) {
+      console.log("Get error = ", err);
+    } else {
+      console.log("Get response = ", res.status);
+      console.log(res.body);
+    }
+  });
