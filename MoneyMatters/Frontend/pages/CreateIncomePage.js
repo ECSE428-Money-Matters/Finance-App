@@ -49,7 +49,7 @@ const CreateIncomePage = ({navigation, route}) => {
     const handleAddIncome = async () => {
         try {
             //setIncomes([...Incomes, newIncome]);
-            const response = await fetch('http://127.0.0.1:3000/incomes', {
+            const response = await fetch('http://10.0.0.122:3000/incomes', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -59,11 +59,13 @@ const CreateIncomePage = ({navigation, route}) => {
                     income_name: incomeDescription,
                     amount: incomeAmount,
                     category: selectedCategory,
-                    posted_date: incomeDate
+                    posted_date: incomeDate,
+                    income_period: 1
                 })
             });
 
             const responseBody = await response.text();
+            console.log("Server response:", responseBody);
             const message = JSON.parse(responseBody); // Parse the JSON response
             if (message.message !== "Income added successfully.") {
 
@@ -72,6 +74,7 @@ const CreateIncomePage = ({navigation, route}) => {
             }
         } catch (error) {
             // handle error, e.g., network error or server error
+            console.log(error);
             alert(error);
         }
     };
@@ -93,21 +96,6 @@ const CreateIncomePage = ({navigation, route}) => {
                               isSelected={selectedCategory === "Other"}/>
                 </View>
             </View>
-        )
-    }
-
-
-    function renderIncomeUI() {
-        return (
-            <KeyboardAvoidingView style={styles.incomeContainer} behavior={"padding"} enabled={true}>
-                <TextInput
-                    style={styles.incomeDescription}
-                    value={incomeDescription}
-                    onChangeText={setIncomeDescription}
-                    placeholder="Income description"
-                    color={'#1D3557'}
-                />
-            </KeyboardAvoidingView>
         )
     }
 

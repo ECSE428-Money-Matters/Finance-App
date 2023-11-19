@@ -34,7 +34,7 @@ const styles = StyleSheet.create({
         color: '#457B9D'
     },
     amountText: {
-        color: '#3FE639'
+        color: '#0c7f00'
     }
 
 

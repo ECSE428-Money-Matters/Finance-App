@@ -9,19 +9,22 @@ import {
     Keyboard, ScrollView, Pressable, Platform
 } from 'react-native';
 import {Colors} from "react-native/Libraries/NewAppScreen";
+import Icon from 'react-native-vector-icons/MaterialIcons';
 import Expense from "../components/Expense";
 import Modal from "react-native-modal";
 import {useFocusEffect} from "@react-navigation/native";
 import { FilterPopUp } from "../components/FilterPopUp";
 import DropDownPicker from "react-native-dropdown-picker";
-
+import Income from "../components/Income";
 
 const Dashboard = ({navigation, route}) => {
     const [expenses, setExpenses] = useState([]);
+    const [income, setIncome] = useState([]);
     const [open, setOpen] = useState(false);
     const [value, setValue] = useState('All');
     const [categoryLabel, setCategoryLabel] = useState('All');
-    const [items, setItems] = useState([
+    const [items, setItems] = useState([])
+    const [expensesCat, SetExpensesCat] = useState([
         {label: 'All', value: 'All'},
         {label: 'Housing', value: 'Housing'},
         {label: 'Transportation', value: 'Transportation'},
@@ -30,7 +33,15 @@ const Dashboard = ({navigation, route}) => {
         {label: 'Health', value: 'Health'},
         {label: 'Other', value: 'Other'},
     ]);
+    const [incomeCat, setIncomeCat] = useState([
+        {label: 'All', value: 'All'},
+        {label: 'Salary', value: 'Salary'},
+        {label: 'Freelance Work', value: 'Freelance Work'},
+        {label: 'Investment', value: 'Investment'},
+        {label: 'Other', value: 'Other'},
+    ]);
     const [isModalVisible, setIsModalVisible] = React.useState(false);
+    const [currentView, setCurrentView] = useState('My Expenses');
 
     // const handleModal = () => setIsModalVisible(() => !isModalVisible);
     const handleModal = () => {
@@ -40,64 +51,101 @@ const Dashboard = ({navigation, route}) => {
             setCategoryLabel(value);
         }
         setIsModalVisible(() => !isModalVisible)
-        handleViewExpense();
+        handleViewData();
     };
 
     useFocusEffect(
         React.useCallback(() => {
-            // This will run when the component gains focus
-            handleViewExpense();
-        }, [])
+            handleViewData();
+        }, [currentView])
     );
 
+    const addIncome = () => {
+        navigation.navigate('CreateIncome', { email: route.params.email });
+    }
 
     const addExpense = () => {
         navigation.navigate('CreateExpense', { email: route.params.email });
     }
-    const handleViewExpense = async () => {
-        console.log("GETTING EXPENSES");
-        try {
-            //setExpenses([...expenses, newExpense]);
-            if (value === 'All'){
-                console.log("VALUE NONE")
-                const response = await fetch(`http://127.0.0.1:3000/view_expense?email=${route.params.email}`, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                });
-                const responseBody = await response.text();
-                const message = JSON.parse(responseBody); // Parse the JSON response
-                setExpenses(message);
-            }else{
-                console.log("VALUE: " + value)
-                const response = await fetch(`http://127.0.0.1:3000/view_expense?email=${route.params.email}&category=${value}`, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                });
-                const responseBody = await response.text();
-                const message = JSON.parse(responseBody); // Parse the JSON response
-                setExpenses(message);
+    const handleViewData = async () => {
+
+        if(currentView === 'My Expenses'){
+            console.log("GETTING EXPENSES");
+            try {
+                //setExpenses([...expenses, newExpense]);
+                if (value === 'All'){
+                    console.log("VALUE NONE")
+                    const response = await fetch(`http://10.0.0.122:3000/view_expense?email=${route.params.email}`, {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                    });
+                    const responseBody = await response.text();
+                    const message = JSON.parse(responseBody); // Parse the JSON response
+                    setExpenses(message);
+                }else{
+                    console.log("VALUE: " + value)
+                    const response = await fetch(`http://10.0.0.122:3000/view_expense?email=${route.params.email}&category=${value}`, {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    });
+                    const responseBody = await response.text();
+                    const message = JSON.parse(responseBody); // Parse the JSON response
+                    setExpenses(message);
+                }
+            } catch (error) {
+                // handle error, e.g., network error or server error
+                console.error("Error adding expense:", error);
+                alert(error);
             }
-        } catch (error) {
-            // handle error, e.g., network error or server error
-            // console.error("Error adding expense:", error);
+        }
+        else {
+            console.log("GETTING INCOME");
+            try {
+                // Logic for fetching income data
+                const response = await fetch(`http://10.0.0.122:3000/incomes?email=${route.params.email}&column_name=${"None"}&category=${value}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                const responseBody = await response.text();
+                console.log(responseBody);
+                const message = JSON.parse(responseBody); // Parse the JSON response
+                setIncome(message); // Update this line to setIncome
+            } catch (error) {
+                // handle error
+                console.error("Error fetching income:", error);
+            }
         }
     };
 
     function renderHeader() {
+        const toggleView = () => {
+            setCurrentView(currentView === 'My Expenses' ? 'My Income' : 'My Expenses');
+            // Reset the category filter when toggling views
+            setValue('All');
+            setCategoryLabel('All');
+            // Update dropdown items based on current view
+            setItems(currentView === 'My Expenses' ? incomeCat : expensesCat);
+        };
+
         return (
             <View style={styles.headerContainer}>
                 <View>
-                    <Text style={styles.header}>My Expenses</Text>
+                    <TouchableOpacity onPress={toggleView} style={styles.toggleButton}>
+                        <Text style={styles.header}>{currentView}</Text>
+                        <Icon name="arrow-drop-down" size={30} color="#000" />
+                    </TouchableOpacity>
                     <Text style={styles.subheader}>Summary</Text>
                     <Text style={styles.subheader2}>{categoryLabel}</Text>
                 </View>
 
                 <View>
-                    <TouchableOpacity style={styles.button} onPress={addExpense}>
+                    <TouchableOpacity style={styles.button} onPress={currentView === 'My Expenses' ? addExpense : addIncome}>
                         <Text style={styles.buttonText}>Add</Text>
                     </TouchableOpacity>
 
@@ -131,22 +179,38 @@ const Dashboard = ({navigation, route}) => {
         )
     }
 
-    function renderExpenses() {
-        return (
-            <ScrollView>
-                <View style={styles.expenses}>
-                    {expenses.map((expense) => (
-                        <Expense desc={expense.expense_name} amt={expense.amount} key={expense.expense_id}/>
-                    ))}
-                </View>
-            </ScrollView>
-        )
+    function renderData() {
+        if (currentView === 'My Expenses') {
+            // Render expenses if the current view is 'My Expenses'
+            return (
+                <ScrollView>
+                    <View style={styles.expenses}>
+                        {Array.isArray(expenses) && expenses.map((expense) => (
+                            <Expense desc={expense.expense_name} amt={expense.amount} key={expense.expense_id}/>
+                        ))}
+                    </View>
+                </ScrollView>
+            );
+        } else {
+            // Render incomes if the current view is 'My Income'
+            return (
+                <ScrollView>
+                    <View style={styles.income}>
+                        {Array.isArray(income) && income.map((inc) => (
+                            <Income desc={inc.income_name} amt={inc.amount} key={inc.income_id}/>
+                        ))}
+                    </View>
+                </ScrollView>
+            );
+        }
     }
+
+
 
     return (
         <View style={styles.container}>
             {renderHeader()}
-            {renderExpenses()}
+            {renderData()}
         </View>
     );
 };
@@ -190,6 +254,10 @@ const styles = StyleSheet.create({
         paddingVertical: 20,
         zIndex: 0
     },
+    income: {
+        paddingVertical: 20,
+        zIndex: 0
+    },
     button: {
         height: 35,
         width: 75,
@@ -220,7 +288,11 @@ const styles = StyleSheet.create({
     }, headerContainer: {
         flexDirection: 'row',
         justifyContent: "space-between"
-    }
+    },
+    toggleButton: {
+        flexDirection: 'row', // Align items in a row
+        alignItems: 'center', // Center items vertically
+    },
 });
 
 export default Dashboard;
