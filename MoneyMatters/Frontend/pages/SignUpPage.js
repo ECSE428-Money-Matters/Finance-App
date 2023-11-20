@@ -1,33 +1,53 @@
 import React, { useState } from "react";
-import { TouchableOpacity, Text, StyleSheet, View, TextInput, Button } from "react-native";
+import {
+  TouchableOpacity,
+  Text,
+  StyleSheet,
+  View,
+  TextInput,
+  Button,
+} from "react-native";
+import * as Linking from "expo-linking";
 
 const SignUpPage = ({ navigation }) => {
-  const [email, setEmail] = useState('');
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
 
   const handleSignUp = async () => {
     try {
-      const response = await fetch('http://192.168.2.11:3000/register', {
-        method: 'POST',
+      const requrl = Linking.createURL();
+      var hostname = requrl.split(":");
+      hostname.pop();
+      hostname = hostname.join("");
+      hostname = hostname.split("//");
+      hostname.shift();
+      hostname = hostname.join("");
+      const url = "http://" + hostname + ":3000" + "/register";
+      console.log("Requesting at " + url);
+      const response = await fetch(url, {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json'
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           email: email,
           username: username,
-          password: password
-        })
+          password: password,
+        }),
       });
 
       const responseBody = await response.text();
       const message = JSON.parse(responseBody); // Parse the JSON response
-      if (message.message === "Verification code sent to email. Please verify to complete registration.") {
+      if (
+        message.message ===
+        "Verification code sent to email. Please verify to complete registration."
+      ) {
         // handle successful login, e.g., navigate to a dashboard
-        navigation.navigate('VerificationCode', { email: email });
+        navigation.navigate("VerificationCode", { email: email });
       } else {
         // handle unsuccessful login, e.g., display an error message
-        alert(message);  
+        alert(message);
       }
     } catch (error) {
       // handle error, e.g., network error or server error
@@ -36,16 +56,15 @@ const SignUpPage = ({ navigation }) => {
     }
   };
 
-
   const handleSignInRedirect = () => {
-    navigation.navigate('SignIn');
+    navigation.navigate("SignIn");
   };
-  
+
   return (
     <View style={styles.container}>
       <Text style={styles.label}>Email:</Text>
-      <TextInput 
-        style={styles.input} 
+      <TextInput
+        style={styles.input}
         value={email}
         onChangeText={setEmail}
         keyboardType="email-address"
@@ -54,17 +73,17 @@ const SignUpPage = ({ navigation }) => {
       />
 
       <Text style={styles.label}>Username:</Text>
-      <TextInput 
-        style={styles.input} 
+      <TextInput
+        style={styles.input}
         value={username}
         onChangeText={setUsername}
         placeholder="Enter your username"
         autoCapitalize="none"
       />
-      
+
       <Text style={styles.label}>Password:</Text>
-      <TextInput 
-        style={styles.input} 
+      <TextInput
+        style={styles.input}
         value={password}
         onChangeText={setPassword}
         placeholder="Enter your password"
@@ -83,7 +102,7 @@ const SignUpPage = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: "center",
     paddingHorizontal: 15,
   },
   label: {
@@ -92,16 +111,16 @@ const styles = StyleSheet.create({
   },
   input: {
     borderWidth: 1,
-    borderColor: '#ccc',
+    borderColor: "#ccc",
     padding: 8,
     marginBottom: 15,
     borderRadius: 5,
   },
   linkText: {
-    color: 'blue',
-    textAlign: 'center',
+    color: "blue",
+    textAlign: "center",
     marginTop: 10,
-    textDecorationLine: 'underline',
+    textDecorationLine: "underline",
   },
 });
 

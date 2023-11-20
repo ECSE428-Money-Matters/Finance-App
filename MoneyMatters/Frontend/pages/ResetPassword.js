@@ -1,11 +1,14 @@
 import React, { useState } from "react";
 import { View, StyleSheet, TextInput, Button, Text } from "react-native";
 import * as Linking from "expo-linking";
-const PasswordRecovery = ({ navigation }) => {
-  const [email, setEmail] = useState("");
 
-  const handlePasswordRecovery = async () => {
+const ResetPassword = ({ route, navigation }) => {
+  const [code, setCode] = useState("");
+  const [password, setPassword] = useState("");
+
+  const handleResetPassword = async () => {
     try {
+      const recid = route.params.recid;
       const requrl = Linking.createURL();
       var hostname = requrl.split(":");
       hostname.pop();
@@ -13,16 +16,18 @@ const PasswordRecovery = ({ navigation }) => {
       hostname = hostname.split("//");
       hostname.shift();
       hostname = hostname.join("");
-      const url = "http://" + hostname + ":3000" + "/recover";
+      const url =
+        "http://" + hostname + ":3000" + "/recover/setpassword/" + recid;
       console.log("Requesting at " + url);
+      console.log(url);
       const response = await fetch(url, {
-        method: "POST",
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          email: email,
-          url: requrl,
+          code: code,
+          password: password,
         }),
       });
 
@@ -30,31 +35,40 @@ const PasswordRecovery = ({ navigation }) => {
       const message = JSON.parse(resBody);
       console.log(message);
 
-      if (message == "Password recovery successfully requested") {
-        alert("Check your email for password recovery instructions!");
+      if (message == "Password was updated") {
+        alert("Pasword has been reset");
         navigation.navigate("SignIn");
       } else {
         alert(message);
       }
     } catch (error) {
-      console.error("Error during password recovery:", error);
+      console.error("Error during password reset:", error);
       alert("Failed to connect to the server.");
     }
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.label}>Email:</Text>
+      <Text style={styles.label}>Code:</Text>
       <TextInput
         style={styles.input}
-        value={email}
-        onChangeText={setEmail}
-        placeholder="Enter your email linked to your account"
-        keyboardType="email-address"
+        value={code}
+        onChangeText={setCode}
+        placeholder="Enter your code sent to your email address"
         autoCapitalize="none"
       />
 
-      <Button title="Recover Password" onPress={handlePasswordRecovery} />
+      <Text style={styles.label}>New Password:</Text>
+      <TextInput
+        style={styles.input}
+        value={password}
+        onChangeText={setPassword}
+        placeholder="Enter your new password"
+        autoCapitalize="none"
+        secureTextEntry={true}
+      />
+
+      <Button title="Reset Password" onPress={handleResetPassword} />
 
       <Text style={styles.linkText} onPress={() => navigation.goBack()}>
         Back to Sign In
@@ -88,4 +102,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default PasswordRecovery;
+export default ResetPassword;
