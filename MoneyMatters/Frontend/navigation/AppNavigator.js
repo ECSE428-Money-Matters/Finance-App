@@ -3,6 +3,8 @@ import { createStackNavigator } from "@react-navigation/stack";
 import SignInPage from "../pages/SignInPage";
 import SignUpPage from "../pages/SignUpPage";
 import PasswordRecovery from "../pages/PasswordRecovery";
+import ResetPassword from "../pages/ResetPassword";
+import NotFound from "../pages/NotFound";
 import VerificationCode from "../pages/VerificationCode";
 import Dashboard from "../pages/Dashboard";
 import createExpensePage from "../pages/CreateExpensePage";
@@ -25,23 +27,33 @@ const AppNavigator = () => {
       <Stack.Screen
         name="PasswordRecovery"
         component={PasswordRecovery}
-        options={{headerShown: false }}
-        />
-        <Stack.Screen
-            name="VerificationCode"
-            component={VerificationCode}
-            options={{headerShown: false }}
-        />
-        <Stack.Screen
-            name="Dashboard"
-            component={Dashboard}
-            options={{headerShown: false }}
-        />
-        <Stack.Screen
-            name="CreateExpense"
-            component={createExpensePage}
-            options={{headerShown: false }}
-        />
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="ResetPassword"
+        component={ResetPassword}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="NotFound"
+        component={NotFound}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="VerificationCode"
+        component={VerificationCode}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="Dashboard"
+        component={Dashboard}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="CreateExpense"
+        component={createExpensePage}
+        options={{ headerShown: false }}
+      />
     </Stack.Navigator>
   );
 };
