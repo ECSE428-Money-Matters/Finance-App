@@ -49,7 +49,7 @@ const CreateExpense = ({navigation, route}) => {
     const handleAddExpense = async () => {
         try {
             //setExpenses([...expenses, newExpense]);
-            const response = await fetch('http://192.168.2.11:3000/add_expense', {
+            const response = await fetch('http://127.0.0.1:3000/add_expense', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

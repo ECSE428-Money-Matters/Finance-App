@@ -6,6 +6,7 @@ import PasswordRecovery from "../pages/PasswordRecovery";
 import VerificationCode from "../pages/VerificationCode";
 import Dashboard from "../pages/Dashboard";
 import createExpensePage from "../pages/CreateExpensePage";
+import Dash from "../pages/Dash";
 
 const Stack = createStackNavigator();
 
@@ -34,7 +35,7 @@ const AppNavigator = () => {
         />
         <Stack.Screen
             name="Dashboard"
-            component={Dashboard}
+            component={Dash}
             options={{headerShown: false }}
         />
         <Stack.Screen

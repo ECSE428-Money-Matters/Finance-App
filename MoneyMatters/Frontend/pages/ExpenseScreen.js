@@ -16,7 +16,7 @@ import { FilterPopUp } from "../components/FilterPopUp";
 import DropDownPicker from "react-native-dropdown-picker";
 
 
-const Dashboard = ({navigation, route}) => {
+const ExpenseScreen = ({navigation, route}) => {
     const [expenses, setExpenses] = useState([]);
     const [open, setOpen] = useState(false);
     const [value, setValue] = useState('All');
@@ -155,7 +155,9 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         paddingHorizontal: 15,
-        paddingVertical: 75
+        // paddingVertical: 75,
+        paddingTop: 75,
+        paddingBottom: 25
     },
     label: {
         fontSize: 16,
@@ -223,4 +225,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export default Dashboard;
+export default ExpenseScreen;
