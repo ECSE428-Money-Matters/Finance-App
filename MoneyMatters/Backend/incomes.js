@@ -19,7 +19,7 @@ router.post("/incomes", async (req, res) => {
     const amount = description.amount;
     const posted_date = description.posted_date;
     const category = description.category;
-    const optional_description = description.optional_description;
+    let optional_description = description.optional_description;
     const income_period = description.income_period; //This is the time in days between each instances of this income (second occurence included, so 1 means each day). Less than 1 means the income is a one-shot
 
     // Check for zero dollars
@@ -40,8 +40,8 @@ router.post("/incomes", async (req, res) => {
     // Check for invalid amount (non-numeric or negative values)
     if (isNaN(amount) || amount <= 0) {
       return res
-        .status(400)
-        .json({ error: "Invalid amount. Amount should be a positive number." });
+          .status(400)
+          .json({ error: "Invalid amount. Amount should be a positive number." });
     }
 
     // avoid empty columns in db
@@ -57,16 +57,16 @@ router.post("/incomes", async (req, res) => {
 
     // add to income table
     const result = await pool.query(
-      "INSERT INTO incomes (email, income_name, amount, posted_date, category, optional_description, income_period) VALUES($1, $2, $3, $4, $5, $6, $7) RETURNING *",
-      [
-        email,
-        income_name,
-        amount,
-        posted_date,
-        category,
-        optional_description,
-        income_period,
-      ]
+        "INSERT INTO incomes (email, income_name, amount, posted_date, category, optional_description, income_period) VALUES($1, $2, $3, $4, $5, $6, $7) RETURNING *",
+        [
+          email,
+          income_name,
+          amount,
+          posted_date,
+          category,
+          optional_description,
+          income_period,
+        ]
     );
 
     if (result.rows.length > 0) {
@@ -83,8 +83,9 @@ router.post("/incomes", async (req, res) => {
 router.get("/incomes", async (req, res) => {
   console.log("viewing income for a user");
   try {
-    const { email } = req.body;
-    const { column_name } = req.body; //What column to filter (a string that will select all incomes with the specified email and between the two column values)
+    const email = req.query.email;
+    const category = req.query.category;
+    const column_name = req.query.column_name; // What column to filter (a string that will select all incomes with the specified email and between the two column values)
     const { column_value_start } = req.body;
     const { column_value_end } = req.body;
 
@@ -101,16 +102,26 @@ router.get("/incomes", async (req, res) => {
       userIncomes = await pool.query(queryInput, [email]);
     } else {
       queryInput =
-        "SELECT * FROM incomes WHERE email = $1 AND " +
-        column_name +
-        " >= $2 AND " +
-        column_name +
-        " <= $3 ";
+          "SELECT * FROM incomes WHERE email = $1 AND " +
+          column_name +
+          " >= $2 AND " +
+          column_name +
+          " <= $3 ";
       userIncomes = await pool.query(queryInput, [
         email,
         column_value_start,
         column_value_end,
       ]);
+    }
+
+    let query = "SELECT * FROM incomes WHERE email = $1";
+    let queryParams = [email];
+
+    // Apply category filter if provided
+    if (category && category !== 'All') {
+      query += " AND category = $2";
+      queryParams.push(category);
+      userIncomes = await pool.query(query, queryParams);
     }
 
     console.log("Filtered income");

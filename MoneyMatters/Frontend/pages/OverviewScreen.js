@@ -41,6 +41,12 @@ const ExpenseScreen = ({navigation, route}) => {
         {label: 'Health', value: 'Health'},
         {label: 'Other', value: 'Other'},
     ]);
+    const [incomeCategories, setIncomeCategories] = useState([
+        {label: 'Salary', value: 'Salary'},
+        {label: 'Freelance', value: 'Freelance'},
+        {label: 'Investment', value: 'Investment'},
+        {label: 'Other', value: 'Other'},
+    ]);
     const [graphData, setGraphData] = useState({
         labels: ["All", "Housing", "Transportation", "Food & Dining" , "Entertainment", "Health", "Other"],
         datasets: [{
@@ -103,8 +109,9 @@ const ExpenseScreen = ({navigation, route}) => {
     const handleViewExpense = async () => {
         try {
             if (value === 'Expenses'){
-                const labels = [];
-                const dataset = [];
+                console.log("expense graph")
+                const labelsExpense = [];
+                const datasetExpense = [];
 
                 for (const category of expenseCategories) {
                     const response = await fetch(`http://127.0.0.1:3000/view_expense?email=${route.params.email}&category=${category.value}`, {
@@ -118,27 +125,46 @@ const ExpenseScreen = ({navigation, route}) => {
 
                     const totalAmount = message.reduce((total, item) => total + parseFloat(item.amount), 0);
 
-                    labels.push(category.label);
-                    dataset.push(totalAmount);
+                    labelsExpense.push(category.label);
+                    datasetExpense.push(totalAmount);
                 }
                 setGraphData({
-                    labels: labels,
+                    labels: labelsExpense,
                     datasets: [{
-                        data: dataset
+                        data: datasetExpense
                     }]
                 });
                 // setExpenses(message);
             }else{
-                console.log("VALUE: " + value)
-                const response = await fetch(`http://127.0.0.1:3000/view_expense?email=${route.params.email}&category=${value}`, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
+                console.log("income graph")
+                const labelsIncome = [];
+                const datasetIncome = [];
+
+                for (const category of incomeCategories) {
+                    console.log(category.label)
+                    const response = await fetch(`http://127.0.0.1:3000/incomes?email=${route.params.email}&column_name=${"None"}&category=${category.value}`, {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                    });
+                    const responseBody = await response.text();
+                    const message = JSON.parse(responseBody);
+
+                    console.log("message: " + JSON.stringify(message));
+
+
+                    const totalAmount = message.reduce((total, item) => total + parseFloat(item.amount), 0);
+
+                    labelsIncome.push(category.label);
+                    datasetIncome.push(totalAmount);
+                }
+                setGraphData({
+                    labels: labelsIncome,
+                    datasets: [{
+                        data: datasetIncome
+                    }]
                 });
-                const responseBody = await response.text();
-                const message = JSON.parse(responseBody); // Parse the JSON response
-                setExpenses(message);
             }
         } catch (error) {
             // handle error, e.g., network error or server error
