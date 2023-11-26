@@ -56,7 +56,12 @@ const Dash = ({navigation, route}) => {
                         }}
             />
             <Tab.Screen name={IncomeScrName} component={IncomeScreen} />
-            <Tab.Screen name={OverviewScrName} component={OverviewScreen}/>
+            <Tab.Screen name={OverviewScrName} component={OverviewScreen} initialParams={{
+                email: email
+            }}
+                        options={{
+                            headerShown : false,
+                        }}/>
 
         </Tab.Navigator>
     );

@@ -55,11 +55,9 @@ const ExpenseScreen = ({navigation, route}) => {
         navigation.navigate('CreateExpense', { email: route.params.email });
     }
     const handleViewExpense = async () => {
-        console.log("GETTING EXPENSES");
         try {
             //setExpenses([...expenses, newExpense]);
             if (value === 'All'){
-                console.log("VALUE NONE")
                 const response = await fetch(`http://127.0.0.1:3000/view_expense?email=${route.params.email}`, {
                     method: 'GET',
                     headers: {
@@ -70,7 +68,6 @@ const ExpenseScreen = ({navigation, route}) => {
                 const message = JSON.parse(responseBody); // Parse the JSON response
                 setExpenses(message);
             }else{
-                console.log("VALUE: " + value)
                 const response = await fetch(`http://127.0.0.1:3000/view_expense?email=${route.params.email}&category=${value}`, {
                     method: 'GET',
                     headers: {
