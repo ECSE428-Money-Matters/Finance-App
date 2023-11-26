@@ -114,7 +114,7 @@ const ExpenseScreen = ({navigation, route}) => {
                 const datasetExpense = [];
 
                 for (const category of expenseCategories) {
-                    const response = await fetch(`http://127.0.0.1:3000/view_expense?email=${route.params.email}&category=${category.value}`, {
+                    const response = await fetch(`http://192.168.2.20:3000/view_expense?email=${route.params.email}&category=${category.value}`, {
                         method: 'GET',
                         headers: {
                             'Content-Type': 'application/json'
@@ -142,7 +142,7 @@ const ExpenseScreen = ({navigation, route}) => {
 
                 for (const category of incomeCategories) {
                     console.log(category.label)
-                    const response = await fetch(`http://127.0.0.1:3000/incomes?email=${route.params.email}&column_name=${"None"}&category=${category.value}`, {
+                    const response = await fetch(`http://192.168.2.20:3000/incomes?email=${route.params.email}&column_name=${"None"}&category=${category.value}`, {
                         method: 'GET',
                         headers: {
                             'Content-Type': 'application/json'

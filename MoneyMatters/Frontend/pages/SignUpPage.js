@@ -8,7 +8,7 @@ const SignUpPage = ({ navigation }) => {
 
   const handleSignUp = async () => {
     try {
-      const response = await fetch('http://127.0.0.1:3000/register', {
+      const response = await fetch('http://192.168.2.20:3000/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -43,6 +43,7 @@ const SignUpPage = ({ navigation }) => {
   
   return (
     <View style={styles.container}>
+      <Text style={styles.title}>Welcome to MoneyMatters</Text>
       <Text style={styles.label}>Email:</Text>
       <TextInput 
         style={styles.input} 
@@ -85,6 +86,11 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     paddingHorizontal: 15,
+  },
+  title: {
+    fontSize: 24, // Adjust the font size as needed
+    textAlign: 'center',
+    marginBottom: 20, // Adjust the margin as needed
   },
   label: {
     fontSize: 16,

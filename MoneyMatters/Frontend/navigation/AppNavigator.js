@@ -6,7 +6,7 @@ import PasswordRecovery from "../pages/PasswordRecovery";
 import VerificationCode from "../pages/VerificationCode";
 import Dashboard from "../pages/Dashboard";
 import createExpensePage from "../pages/CreateExpensePage";
-import Dash from "../pages/Dash";
+import CreateIncomePage from "../pages/CreateIncomePage";
 
 const Stack = createStackNavigator();
 
@@ -35,12 +35,17 @@ const AppNavigator = () => {
         />
         <Stack.Screen
             name="Dashboard"
-            component={Dash}
+            component={Dashboard}
             options={{headerShown: false }}
         />
         <Stack.Screen
             name="CreateExpense"
             component={createExpensePage}
+            options={{headerShown: false }}
+        />
+        <Stack.Screen
+            name="CreateIncome"
+            component={CreateIncomePage}
             options={{headerShown: false }}
         />
     </Stack.Navigator>

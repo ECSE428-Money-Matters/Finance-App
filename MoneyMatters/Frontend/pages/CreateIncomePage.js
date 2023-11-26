@@ -10,16 +10,16 @@ import {
     Keyboard, ScrollView, Pressable, Platform
 } from 'react-native';
 import {Colors} from "react-native/Libraries/NewAppScreen";
-import Expense from "../components/Expense";
+import Income from "../components/Income";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import Category from "../components/Category";
 
-const CreateExpense = ({navigation, route}) => {
+const CreateIncomePage = ({navigation, route}) => {
     // const { email } = route.params;
-    const [expenseDescription, setExpenseDescription] = useState('');
-    const [expenseAmount, setExpenseAmount] = useState('');
-    const [expenseCategory, setExpenseCategory] = useState('');
-    const [expenseDate, setExpenseDate] = useState('');
+    const [incomeDescription, setIncomeDescription] = useState('');
+    const [incomeAmount, setIncomeAmount] = useState('');
+    const [incomeCategory, setIncomeCategory] = useState('');
+    const [incomeDate, setIncomeDate] = useState('');
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [showDatePicker, setShowDatePicker] = useState(false);
     const [selectedCategory, setSelectedCategory] = useState('');
@@ -30,14 +30,14 @@ const CreateExpense = ({navigation, route}) => {
         console.log("CAT: " + selectedCategory)
     };
     const clearText = () => {
-        setExpenseAmount('');
-        setExpenseDescription('');
-        setExpenseDate('');
-        setExpenseCategory('');
+        setIncomeAmount('');
+        setIncomeDescription('');
+        setIncomeDate('');
+        setIncomeCategory('');
     }
 
     const submitButton = () => {
-        handleAddExpense();
+        handleAddIncome();
         clearText();
         Keyboard.dismiss();
     };
@@ -46,35 +46,36 @@ const CreateExpense = ({navigation, route}) => {
         navigation.navigate('Dashboard', { email: route.params.email })
     };
 
-    const handleAddExpense = async () => {
+    const handleAddIncome = async () => {
         try {
-            //setExpenses([...expenses, newExpense]);
-            const response = await fetch('http://192.168.2.20:3000/add_expense', {
+            //setIncomes([...Incomes, newIncome]);
+            const response = await fetch('http://192.168.2.20:3000/incomes', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
                     email: route.params.email,
-                    expense_name: expenseDescription,
-                    amount: expenseAmount,
+                    income_name: incomeDescription,
+                    amount: incomeAmount,
                     category: selectedCategory,
-                    posted_date: expenseDate
+                    posted_date: incomeDate,
+                    income_period: 1
                 })
             });
 
             const responseBody = await response.text();
+            console.log("Server response:", responseBody);
             const message = JSON.parse(responseBody); // Parse the JSON response
-            if (message.message === "Expense added successfully.") {
-                // handle successful login, e.g., navigate to a dashboard
-                //navigation.navigate('Dashboard');
-            } else {
+            if (message.message !== "Income added successfully.") {
+
                 // handle unsuccessful login, e.g., display an error message
                 alert(message.error);
             }
         } catch (error) {
             // handle error, e.g., network error or server error
-            // console.error("Error adding expense:", error);
+            console.log(error);
+            alert(error);
         }
     };
 
@@ -82,38 +83,19 @@ const CreateExpense = ({navigation, route}) => {
         return (
             <View>
                 <View>
-                    <Text style={styles.header}>Add Expense</Text>
+                    <Text style={styles.header}>Add Income</Text>
                 </View>
                 <View style={styles.CategoriesContainer}>
-                    <Category desc={"Housing"} onSelect={(isSelected) => handleCategorySelect(isSelected)}
-                              isSelected={selectedCategory === "Housing"}/>
-                    <Category desc={"Transportation"} onSelect={(isSelected) => handleCategorySelect(isSelected)}
-                              isSelected={selectedCategory === "Transportation"}/>
-                    <Category desc={"Food & Dining"} onSelect={(isSelected) => handleCategorySelect(isSelected)}
-                              isSelected={selectedCategory === "Food & Dining"}/>
-                    <Category desc={"Entertainment"} onSelect={(isSelected) => handleCategorySelect(isSelected)}
-                              isSelected={selectedCategory === "Entertainment"}/>
-                    <Category desc={"Health"} onSelect={(isSelected) => handleCategorySelect(isSelected)}
-                              isSelected={selectedCategory === "Health"}/>
+                    <Category desc={"Salary"} onSelect={(isSelected) => handleCategorySelect(isSelected)}
+                              isSelected={selectedCategory === "Salary"}/>
+                    <Category desc={"Freelance Work"} onSelect={(isSelected) => handleCategorySelect(isSelected)}
+                              isSelected={selectedCategory === "Freelance Work"}/>
+                    <Category desc={"Investment"} onSelect={(isSelected) => handleCategorySelect(isSelected)}
+                              isSelected={selectedCategory === "Investment"}/>
                     <Category desc={"Other"} onSelect={(isSelected) => handleCategorySelect(isSelected)}
                               isSelected={selectedCategory === "Other"}/>
                 </View>
             </View>
-        )
-    }
-
-
-    function renderExpenseUI() {
-        return (
-            <KeyboardAvoidingView style={styles.expenseContainer} behavior={"padding"} enabled={true}>
-                <TextInput
-                    style={styles.expenseDescription}
-                    value={expenseDescription}
-                    onChangeText={setExpenseDescription}
-                    placeholder="Expense description"
-                    color={'#1D3557'}
-                />
-            </KeyboardAvoidingView>
         )
     }
 
@@ -136,16 +118,16 @@ const CreateExpense = ({navigation, route}) => {
             <View style={styles.DateAmountDescriptionContainer} /*behavior={"padding"} enabled={true}*/>
                 <TextInput
                     style={styles.textInput}
-                    value={expenseDescription}
-                    onChangeText={setExpenseDescription}
-                    placeholder="Expense description"
+                    value={incomeDescription}
+                    onChangeText={setIncomeDescription}
+                    placeholder="Income description"
                     color={'#1D3557'}
                 />
 
                 <TextInput
                     style={styles.textInput}
-                    value={expenseAmount}
-                    onChangeText={setExpenseAmount}
+                    value={incomeAmount}
+                    onChangeText={setIncomeAmount}
                     placeholder="Amount"
                     keyboardType={"numeric"}
                     color={'#1D3557'}
@@ -153,8 +135,8 @@ const CreateExpense = ({navigation, route}) => {
 
                 <TextInput
                     style={styles.textInput}
-                    value={expenseDate}
-                    onChangeText={setExpenseDate}
+                    value={incomeDate}
+                    onChangeText={setIncomeDate}
                     placeholder="Date (YYYY-MM-DD)"
                     color={'#1D3557'}
                 />
@@ -226,6 +208,10 @@ const styles = StyleSheet.create({
         fontWeight: '500',
         color: '#075985'
     },
+    // TODO: STYLE CONTAINERS?
+    incomeContainer: undefined,
+    incomeDescription: undefined
+
 });
 
-export default CreateExpense;
+export default CreateIncomePage;
