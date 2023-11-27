@@ -1,55 +1,126 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
-import Chart from 'react-native-chart-kit';
+  import React, { useEffect, useState } from 'react';
+  import { View, Text, StyleSheet, ScrollView } from 'react-native';
+  import { LineChart as Chart } from 'react-native-chart-kit';
+  import { Picker } from '@react-native-picker/picker';
 
-// before testing this, need to merge income.js in backend
-const LineChart = ({ route }) => {
-  const [expenseData, setExpenseData] = useState([]);
-  const [incomeData, setIncomeData] = useState([]);
 
-  useEffect(() => {
-    // Fetch expense and income data from API
-    const fetchFinancialData = async () => {
-      try {
-        const expenseResponse = await fetch(`http://127.0.0.1:3000/get_expenses?email=${route.params.email}`);
-        const expenseData = await expenseResponse.json();
-        setExpenseData(expenseData);
+  const LineChart = ({ route }) => {
+    const [expenseData, setExpenseData] = useState([]);
+    const [incomeData, setIncomeData] = useState([]);
+    const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
+    const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
 
-        const incomeResponse = await fetch(`http://127.0.0.1:3000/get_income?email=${route.params.email}`);
-        const incomeData = await incomeResponse.json();
-        setIncomeData(incomeData);
-        
-      } catch (error) {
-        console.error('Error fetching financial data:', error);
+
+    const processDataForChart = (data) => {
+      const daysInMonth = new Date(selectedYear, selectedMonth + 1, 0).getDate();
+      let dailyTotals = new Array(daysInMonth).fill(0);
+      let cumulativeTotal = 0;
+    
+      data.forEach(entry => {
+        const date = new Date(entry.posted_date);
+        if (date.getMonth() === selectedMonth && date.getFullYear() === selectedYear) {
+          const day = date.getDate() - 1; // Convert date to zero-indexed day of the month
+          cumulativeTotal += parseFloat(entry.amount); // Add to cumulative total
+          dailyTotals[day] = cumulativeTotal; // Assign cumulative total to the day
+        }
+      });
+    
+      // Ensure that we fill in the gaps for cumulative totals on days without expenses
+      for (let i = 1; i < dailyTotals.length; i++) {
+        if (dailyTotals[i] === 0) {
+          dailyTotals[i] = dailyTotals[i - 1];
+        }
       }
+    
+      return dailyTotals;
+    };
+    
+
+    useEffect(() => {
+      const fetchFinancialData = async () => {
+        try {
+          // Fetching all expenses for the user first
+          const response = await fetch(`http://10.121.121.182:3000/view_expense?email=${route.params.email}`);
+          
+          const text = await response.text(); // Get the response text
+          console.log('Response text:', text); // Log the raw text of the response
+          
+          // Attempt to parse it as JSON
+          const allExpenses = JSON.parse(text);
+          
+          // Filter the expenses based on the selected month and year
+          const filteredExpenses = allExpenses.filter(expense => {
+            const expenseDate = new Date(expense.posted_date);
+            return expenseDate.getMonth() === selectedMonth && expenseDate.getFullYear() === selectedYear;
+          });
+    
+          setExpenseData(processDataForChart(filteredExpenses));
+    
+          // Similar logic for income if necessary
+          // ...
+    
+        } catch (error) {
+          console.error('Error fetching financial data:', error);
+        }
+      };
+    
+      fetchFinancialData();
+    }, [route.params.email, selectedMonth, selectedYear]);
+
+    const chartData = {
+      // We filter the labels to only include the 1st, 10th, 20th, and 30th days
+      labels: expenseData.map((_, index) => index + 1).filter(day => [1, 10, 20, 30].includes(day)),
+      datasets: [
+        {
+          data: expenseData,
+          color: (opacity = 1) => `rgba(255, 0, 0, ${opacity})`,
+          strokeWidth: 2,
+          label: 'Expenses',
+          // Add the below property to make it a continuous line
+          bezier: true,
+        },
+        {
+          data: incomeData, // Make sure you process incomeData the same way as expenseData
+          color: (opacity = 1) => `rgba(0, 255, 0, ${opacity})`,
+          strokeWidth: 2,
+          label: 'Income',
+          bezier: true,
+        }
+      ]
     };
 
-    fetchFinancialData();
-  }, [route.params.email]);
-
+    const renderDatePickers = () => {
+      return (
+        <View style={styles.pickerContainer}>
+          <Picker
+            selectedValue={selectedMonth}
+            style={styles.picker}
+            onValueChange={(itemValue) => setSelectedMonth(itemValue)}>
+            {Array.from({ length: 12 }).map((_, index) => (
+              <Picker.Item key={index} label={`${index + 1}`} value={index} />
+            ))}
+          </Picker>
+          <Picker
+            selectedValue={selectedYear}
+            style={styles.picker}
+            onValueChange={(itemValue) => setSelectedYear(itemValue)}>
+            {/* Example year range: 2020-2023 */}
+            {Array.from({ length: 4 }).map((_, index) => (
+              <Picker.Item key={2023 - index} label={`${2023 - index}`} value={2023 - index} />
+            ))}
+          </Picker>
+        </View>
+      );
+    };
+  
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Financial Chart</Text>
+      {renderDatePickers()}
       <ScrollView style={styles.chartContainer}>
         {(expenseData.length > 0 || incomeData.length > 0) ? (
           <Chart
-            data={{
-              labels: expenseData.map(entry => entry.posted_date), 
-              datasets: [
-                {
-                  data: expenseData.map(entry => entry.amount),
-                  color: (opacity = 1) => `rgba(255, 0, 0, ${opacity})`, // Red for expenses
-                  strokeWidth: 2,
-                  label: 'Expenses',
-                },
-                {
-                  data: incomeData.map(entry => entry.amount),
-                  color: (opacity = 1) => `rgba(0, 255, 0, ${opacity})`, // Green for income
-                  strokeWidth: 2,
-                  label: 'Income',
-                },
-              ],
-            }}
+            data={chartData}
             width={350}
             height={220}
             chartConfig={{
@@ -79,6 +150,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     paddingVertical: 75,
   },
+  pickerContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    padding: 10,
+    alignItems: 'center',
+  },
+  picker: {
+    flex: 1,
+  },
   header: {
     color: '#075985',
     fontSize: 35,
@@ -89,4 +169,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default LineChart;
+  export default LineChart;
