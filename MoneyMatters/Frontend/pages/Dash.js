@@ -1,21 +1,11 @@
 import React, {useEffect, useState} from 'react';
-import {
-    View,
-    StyleSheet,
-    TextInput,
-    Button,
-    Text,
-    TouchableOpacity,
-    Keyboard, ScrollView, Pressable, Platform
-} from 'react-native';
-import { NavigationContainer} from "@react-navigation/native";
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 // Screens
 import ExpenseScreen from "./ExpenseScreen";
-import IncomeScreen from "./IncomeScreen";
 import OverviewScreen from "./OverviewScreen";
+import IncomeScreen from "./IncomeScreen";
 
 // Screen names
 const ExpenseScrName = 'Expense';
@@ -55,7 +45,13 @@ const Dash = ({navigation, route}) => {
                             headerShown : false,
                         }}
             />
-            <Tab.Screen name={IncomeScrName} component={IncomeScreen} />
+            <Tab.Screen name={IncomeScrName} component={IncomeScreen}
+                        initialParams={{
+                            email: email
+                        }}
+                        options={{
+                            headerShown : false,
+                        }}/>
             <Tab.Screen name={OverviewScrName} component={OverviewScreen} initialParams={{
                 email: email
             }}

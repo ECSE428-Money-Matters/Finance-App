@@ -7,7 +7,7 @@ const Verification = ({ navigation, route }) => {
 
   const handleCode = async () => {
     try {
-      const response = await fetch('http://192.168.2.20:3000/verify', {
+      const response = await fetch('http://10.0.0.249:3000/verify', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

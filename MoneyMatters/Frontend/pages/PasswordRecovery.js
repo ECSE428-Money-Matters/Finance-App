@@ -6,7 +6,7 @@ const PasswordRecovery = ({ navigation }) => {
 
   const handlePasswordRecovery = async () => {
     try {
-      const response = await fetch('http://192.168.2.20:3000/recover', {
+      const response = await fetch('http://10.0.0.249:3000/recover', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

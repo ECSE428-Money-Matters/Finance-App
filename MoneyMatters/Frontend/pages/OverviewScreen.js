@@ -23,7 +23,7 @@ import { Dimensions } from "react-native";
 
 
 
-const ExpenseScreen = ({navigation, route}) => {
+const OverviewScreen = ({navigation, route}) => {
     const [expenses, setExpenses] = useState([]);
     const [open, setOpen] = useState(false);
     const [value, setValue] = useState('Expenses');
@@ -53,6 +53,10 @@ const ExpenseScreen = ({navigation, route}) => {
             data: [20, 45, 28, 80, 99, 43, 100]
         }]
     });
+
+    // Additional state for Pie Chart data
+    const [pieChartData, setPieChartData] = useState([]);
+
     const [isModalVisible, setIsModalVisible] = React.useState(false);
     const chartConfig = {
         backgroundGradientFromOpacity: 0,
@@ -114,7 +118,7 @@ const ExpenseScreen = ({navigation, route}) => {
                 const datasetExpense = [];
 
                 for (const category of expenseCategories) {
-                    const response = await fetch(`http://192.168.2.20:3000/view_expense?email=${route.params.email}&category=${category.value}`, {
+                    const response = await fetch(`http://10.0.0.249:3000/view_expense?email=${route.params.email}&category=${category.value}`, {
                         method: 'GET',
                         headers: {
                             'Content-Type': 'application/json'
@@ -142,7 +146,7 @@ const ExpenseScreen = ({navigation, route}) => {
 
                 for (const category of incomeCategories) {
                     console.log(category.label)
-                    const response = await fetch(`http://192.168.2.20:3000/incomes?email=${route.params.email}&column_name=${"None"}&category=${category.value}`, {
+                    const response = await fetch(`http://10.0.0.249:3000/incomes?email=${route.params.email}&column_name=${"None"}&category=${category.value}`, {
                         method: 'GET',
                         headers: {
                             'Content-Type': 'application/json'
@@ -159,16 +163,20 @@ const ExpenseScreen = ({navigation, route}) => {
                     labelsIncome.push(category.label);
                     datasetIncome.push(totalAmount);
                 }
+
+
                 setGraphData({
                     labels: labelsIncome,
                     datasets: [{
                         data: datasetIncome
                     }]
                 });
+
+
             }
         } catch (error) {
-            // handle error, e.g., network error or server error
-            // console.error("Error adding expense:", error);
+            console.error("Error adding expense:", error);
+            alert(error);
         }
     };
 
@@ -217,17 +225,33 @@ const ExpenseScreen = ({navigation, route}) => {
     }
 
     function renderExpenses() {
+        const isBarChart = iconName === 'stats-chart-outline';
         return (
             <ScrollView>
-                <BarChart
-                    style={styles.graphStyle}
-                    data={graphData}
-                    width={screenWidth}
-                    height={250}
-                    chartConfig={chartConfig}
-                    veticalLabelRotation={90} />
+                {isBarChart ? (
+                    <BarChart
+                        style={styles.graphStyle}
+                        data={graphData}
+                        width={screenWidth}
+                        height={250}
+                        chartConfig={chartConfig}
+                        verticalLabelRotation={90}
+                    />
+                ) : (
+                    <PieChart
+                        data={pieChartData}
+                        width={screenWidth}
+                        height={200}
+                        chartConfig={chartConfig}
+                        accessor={"amount"}
+                        backgroundColor={"transparent"}
+                        paddingLeft={"0"}
+                        center={[0, 0]}
+                        absolute
+                    />
+                )}
             </ScrollView>
-        )
+        );
     }
 
     return (
@@ -315,4 +339,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export default ExpenseScreen;
+export default OverviewScreen;

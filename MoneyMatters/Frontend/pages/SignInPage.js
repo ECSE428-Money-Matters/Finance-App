@@ -7,7 +7,7 @@ const SignInPage = ({ navigation }) => {
 
   const handleSignIn = async () => {
     try {
-      const response = await fetch('http://192.168.2.20:3000/login', {
+      const response = await fetch('http://10.0.0.249:3000/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
