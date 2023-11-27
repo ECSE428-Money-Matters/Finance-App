@@ -43,7 +43,7 @@ const OverviewScreen = ({navigation, route}) => {
     ]);
     const [incomeCategories, setIncomeCategories] = useState([
         {label: 'Salary', value: 'Salary'},
-        {label: 'Freelance', value: 'Freelance'},
+        {label: 'Freelance Work', value: 'Freelance Work'},
         {label: 'Investment', value: 'Investment'},
         {label: 'Other', value: 'Other'},
     ]);
@@ -118,7 +118,7 @@ const OverviewScreen = ({navigation, route}) => {
                 const datasetExpense = [];
 
                 for (const category of expenseCategories) {
-                    const response = await fetch(`http://10.0.0.249:3000/view_expense?email=${route.params.email}&category=${category.value}`, {
+                    const response = await fetch(`http://127.0.0.1:3000/view_expense?email=${route.params.email}&category=${category.value}`, {
                         method: 'GET',
                         headers: {
                             'Content-Type': 'application/json'
@@ -146,7 +146,7 @@ const OverviewScreen = ({navigation, route}) => {
 
                 for (const category of incomeCategories) {
                     console.log(category.label)
-                    const response = await fetch(`http://10.0.0.249:3000/incomes?email=${route.params.email}&column_name=${"None"}&category=${category.value}`, {
+                    const response = await fetch(`http://127.0.0.1:3000/incomes?email=${route.params.email}&column_name=${"None"}&category=${category.value}`, {
                         method: 'GET',
                         headers: {
                             'Content-Type': 'application/json'
@@ -225,7 +225,7 @@ const OverviewScreen = ({navigation, route}) => {
     }
 
     function renderExpenses() {
-        const isBarChart = iconName === 'stats-chart-outline';
+        const isBarChart = iconName === 'pie-chart-outline';
         return (
             <ScrollView>
                 {isBarChart ? (
