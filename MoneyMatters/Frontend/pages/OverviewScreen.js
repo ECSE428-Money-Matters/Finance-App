@@ -144,7 +144,7 @@ const OverviewScreen = ({ navigation, route }) => {
       const categories =
         value === "Expenses" ? expenseCategories : incomeCategories;
       const endpoint = value === "Expenses" ? "/view_expense" : "/incomes";
-      const baseUrl = `http://192.168.0.104:3000`;
+      const baseUrl = `http://10.0.0.124:3000`;
 
       for (const category of categories) {
         const url =
@@ -241,9 +241,6 @@ const OverviewScreen = ({ navigation, route }) => {
             </FilterPopUp.Container>
           </FilterPopUp>
         </View>
-        <TouchableOpacity style={styles.button} onPress={navigateToLineChart}>
-          <Text style={styles.largeButtonText}>Line Plot</Text>
-        </TouchableOpacity>
       </View>
     );
   }
@@ -298,6 +295,9 @@ const OverviewScreen = ({ navigation, route }) => {
     <View style={styles.container}>
       {renderHeader()}
       {renderExpenses()}
+      <TouchableOpacity style={styles.linePlotButton} onPress={navigateToLineChart}>
+        <Text style={styles.largeButtonText}>Line Plot</Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -323,7 +323,6 @@ const styles = StyleSheet.create({
     top: 615, // Distance from bottom
     left: "10%", // Left position
     right: "10%", // Right position, ensures the button is centered
-    width: "80%", // Button width
     width: "80%", // Button width
   },
   largeButtonText: {
@@ -410,6 +409,17 @@ const styles = StyleSheet.create({
     marginTop: 5,
     borderWidth: 1,
   },
+  linePlotButton:{
+    height: 35,
+    width: "70%",
+    justifyContent: "center",
+    alignItems: "center",
+    alignSelf: "center",
+    borderRadius: 50,
+    marginTop: 10,
+    marginBottom: 15,
+    backgroundColor: "#075985",
+  }
 });
 
 const categoryColors = {

@@ -60,7 +60,7 @@ const ExpenseScreen = ({ navigation, route }) => {
       //setExpenses([...expenses, newExpense]);
       if (value === "All") {
         const response = await fetch(
-          `http://192.168.0.104:3000/view_expense?email=${route.params.email}`,
+          `http://10.0.0.124:3000/view_expense?email=${route.params.email}`,
           {
             method: "GET",
             headers: {
@@ -73,7 +73,7 @@ const ExpenseScreen = ({ navigation, route }) => {
         setExpenses(message);
       } else {
         const response = await fetch(
-          `http://192.168.0.104:3000/view_expense?email=${route.params.email}&category=${value}`,
+          `http://10.0.0.124:3000/view_expense?email=${route.params.email}&category=${value}`,
           {
             method: "GET",
             headers: {

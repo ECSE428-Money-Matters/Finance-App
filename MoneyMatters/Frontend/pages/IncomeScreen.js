@@ -47,7 +47,7 @@ const IncomeScreen = ({ navigation, route }) => {
     try {
       // Adjust the API endpoint and parameters as necessary
       const response = await fetch(
-        `http://192.168.0.104:3000/incomes?email=${
+        `http://10.0.0.124:3000/incomes?email=${
           route.params.email
         }&column_name=${"None"}&category=${value}`,
         {

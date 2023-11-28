@@ -42,7 +42,7 @@ const LineChart = ({ route }) => {
       try {
         // Fetch expenses
         const expenseResponse = await fetch(
-          `http://192.168.0.104:3000/view_expense?email=${route.params.email}`
+          `http://10.0.0.124:3000/view_expense?email=${route.params.email}`
         );
         const expenses = await expenseResponse.json();
         const filteredExpenses = expenses.filter((expense) => {
@@ -56,7 +56,7 @@ const LineChart = ({ route }) => {
 
         // Fetch incomes
         const incomeResponse = await fetch(
-          `http://192.168.0.104:3000/incomes?email=${
+          `http://10.0.0.124:3000/incomes?email=${
             route.params.email
           }&column_name=${"None"}&category=${"All"}`
         );
