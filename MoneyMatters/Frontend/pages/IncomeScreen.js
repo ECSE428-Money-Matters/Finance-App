@@ -70,7 +70,7 @@ const IncomeScreen = ({ navigation, route }) => {
     return (
       <View style={styles.headerContainer}>
         <View>
-          <Text style={styles.header}>My Income</Text>
+          <Text style={styles.header}>My Incomes</Text>
           <Text style={styles.subheader}>Summary</Text>
           <Text style={styles.subheader2}>{categoryLabel}</Text>
         </View>

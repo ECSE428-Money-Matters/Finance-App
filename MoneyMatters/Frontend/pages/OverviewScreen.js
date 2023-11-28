@@ -29,7 +29,7 @@ const OverviewScreen = ({ navigation, route }) => {
   const [iconName, setIconName] = useState("pie-chart-outline");
   const [filterItems, setFilterItems] = useState([
     { label: "Expenses", value: "Expenses" },
-    { label: "Income", value: "Income" },
+    { label: "Incomes", value: "Incomes" },
   ]);
   const [expenseCategories, setExpenseCategories] = useState([
     { label: "Housing", value: "Housing" },
