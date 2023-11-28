@@ -7,7 +7,7 @@ const SignInPage = ({ navigation }) => {
 
   const handleSignIn = async () => {
     try {
-      const response = await fetch('http://192.168.2.11:3000/login', {
+      const response = await fetch('http://10.0.0.124:3000/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -45,7 +45,6 @@ const SignInPage = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Welcome to MoneyMatters</Text>
       <Text style={styles.label}>Email:</Text>
       <TextInput 
         style={styles.input} 
@@ -67,9 +66,7 @@ const SignInPage = ({ navigation }) => {
 
       <Button title="Sign In" onPress={handleSignIn} />
 
-      <Text style={styles.linkText} onPress={handleSignUpRedirect}>   {/* <-- New "Sign Up" link */}
-        Don't have an account? Sign Up
-      </Text>
+      <Text style={styles.linkText} onPress={handleSignUpRedirect}>Don't have an account? Sign Up</Text>
 
       <Text style={styles.linkText} onPress={handlePasswordRecoveryRedirect}>
         Forgot Password?
@@ -101,11 +98,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 10,
     textDecorationLine: 'underline',
-  },
-  title: {
-    fontSize: 24, // Adjust the font size as needed
-    textAlign: 'center',
-    marginBottom: 20, // Adjust the margin as needed
   },
 });
 

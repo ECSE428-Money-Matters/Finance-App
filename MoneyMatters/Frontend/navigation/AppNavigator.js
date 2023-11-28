@@ -8,6 +8,8 @@ import NotFound from "../pages/NotFound";
 import VerificationCode from "../pages/VerificationCode";
 import Dashboard from "../pages/Dashboard";
 import createExpensePage from "../pages/CreateExpensePage";
+import Dash from "../pages/Dash";
+import createIncomePage from "../pages/CreateIncomePage";
 
 const Stack = createStackNavigator();
 
@@ -52,6 +54,11 @@ const AppNavigator = () => {
       <Stack.Screen
         name="CreateExpense"
         component={createExpensePage}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="CreateIncome"
+        component={createIncomePage}
         options={{ headerShown: false }}
       />
     </Stack.Navigator>

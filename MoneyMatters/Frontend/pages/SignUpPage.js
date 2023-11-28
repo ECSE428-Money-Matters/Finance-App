@@ -62,6 +62,7 @@ const SignUpPage = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
+      <Text style={styles.title}>Welcome to MoneyMatters</Text>
       <Text style={styles.label}>Email:</Text>
       <TextInput
         style={styles.input}
@@ -104,6 +105,11 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     paddingHorizontal: 15,
+  },
+  title: {
+    fontSize: 24, // Adjust the font size as needed
+    textAlign: "center",
+    marginBottom: 20, // Adjust the margin as needed
   },
   label: {
     fontSize: 16,
