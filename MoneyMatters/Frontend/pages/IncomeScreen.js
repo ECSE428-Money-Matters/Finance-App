@@ -46,7 +46,7 @@ const IncomeScreen = ({navigation, route}) => {
     const handleViewIncome = async () => {
         try {
             // Adjust the API endpoint and parameters as necessary
-            const response = await fetch(`http://10.0.0.249:3000/incomes?email=${route.params.email}&column_name=${"None"}&category=${value}`, {
+            const response = await fetch(`http://127.0.0.1:3000/incomes?email=${route.params.email}&column_name=${"None"}&category=${value}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json'

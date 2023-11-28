@@ -40,7 +40,7 @@
       const fetchFinancialData = async () => {
         try {
           // Fetch expenses
-          const expenseResponse = await fetch(`http://192.168.2.182:3000/view_expense?email=${route.params.email}`);
+          const expenseResponse = await fetch(`http://127.0.0.1:3000/view_expense?email=${route.params.email}`);
           const expenses = await expenseResponse.json();
           const filteredExpenses = expenses.filter(expense => {
             const expenseDate = new Date(expense.posted_date);
@@ -49,7 +49,7 @@
           setExpenseData(processDataForChart(filteredExpenses));
     
           // Fetch incomes
-          const incomeResponse = await fetch(`http://192.168.2.182:3000/incomes?email=${route.params.email}&column_name=${"None"}&category=${"All"}`);
+          const incomeResponse = await fetch(`http://127.0.0.1:3000/incomes?email=${route.params.email}&column_name=${"None"}&category=${"All"}`);
           const incomes = await incomeResponse.json();
           const filteredIncomes = incomes.filter(income => {
             const incomeDate = new Date(income.posted_date);

@@ -49,7 +49,7 @@ const CreateIncomePage = ({navigation, route}) => {
     const handleAddIncome = async () => {
         try {
             //setIncomes([...Incomes, newIncome]);
-            const response = await fetch('http://10.0.0.249:3000/incomes', {
+            const response = await fetch('http://127.0.0.1:3000/incomes', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
