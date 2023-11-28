@@ -2,9 +2,13 @@
   import { View, Text, StyleSheet, ScrollView } from 'react-native';
   import { LineChart as Chart } from 'react-native-chart-kit';
   import { Picker } from '@react-native-picker/picker';
+  import { useNavigation } from '@react-navigation/native';
+  import { Button } from 'react-native';
 
 
   const LineChart = ({ route }) => {
+    const navigation = useNavigation();
+
     const [expenseData, setExpenseData] = useState([]);
     const [incomeData, setIncomeData] = useState([]);
     const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
@@ -14,50 +18,44 @@
     const processDataForChart = (data) => {
       const daysInMonth = new Date(selectedYear, selectedMonth + 1, 0).getDate();
       let dailyTotals = new Array(daysInMonth).fill(0);
-      let cumulativeTotal = 0;
     
       data.forEach(entry => {
         const date = new Date(entry.posted_date);
         if (date.getMonth() === selectedMonth && date.getFullYear() === selectedYear) {
-          const day = date.getDate() - 1; // Convert date to zero-indexed day of the month
-          cumulativeTotal += parseFloat(entry.amount); // Add to cumulative total
-          dailyTotals[day] = cumulativeTotal; // Assign cumulative total to the day
+          const day = date.getDate() - 1;
+          const amount = parseFloat(entry.amount);
+          if (isFinite(amount)) { // Check if amount is a finite number
+            for (let i = day; i < dailyTotals.length; i++) {
+              dailyTotals[i] += amount;
+            }
+          }
         }
       });
     
-      // Ensure that we fill in the gaps for cumulative totals on days without expenses
-      for (let i = 1; i < dailyTotals.length; i++) {
-        if (dailyTotals[i] === 0) {
-          dailyTotals[i] = dailyTotals[i - 1];
-        }
-      }
-    
       return dailyTotals;
     };
-    
+       
 
     useEffect(() => {
       const fetchFinancialData = async () => {
         try {
-          // Fetching all expenses for the user first
-          const response = await fetch(`http://10.121.121.182:3000/view_expense?email=${route.params.email}`);
-          
-          const text = await response.text(); // Get the response text
-          console.log('Response text:', text); // Log the raw text of the response
-          
-          // Attempt to parse it as JSON
-          const allExpenses = JSON.parse(text);
-          
-          // Filter the expenses based on the selected month and year
-          const filteredExpenses = allExpenses.filter(expense => {
+          // Fetch expenses
+          const expenseResponse = await fetch(`http://192.168.2.182:3000/view_expense?email=${route.params.email}`);
+          const expenses = await expenseResponse.json();
+          const filteredExpenses = expenses.filter(expense => {
             const expenseDate = new Date(expense.posted_date);
             return expenseDate.getMonth() === selectedMonth && expenseDate.getFullYear() === selectedYear;
           });
-    
           setExpenseData(processDataForChart(filteredExpenses));
     
-          // Similar logic for income if necessary
-          // ...
+          // Fetch incomes
+          const incomeResponse = await fetch(`http://192.168.2.182:3000/incomes?email=${route.params.email}&column_name=${"None"}&category=${"All"}`);
+          const incomes = await incomeResponse.json();
+          const filteredIncomes = incomes.filter(income => {
+            const incomeDate = new Date(income.posted_date);
+            return incomeDate.getMonth() === selectedMonth && incomeDate.getFullYear() === selectedYear;
+          });
+          setIncomeData(processDataForChart(filteredIncomes));
     
         } catch (error) {
           console.error('Error fetching financial data:', error);
@@ -68,26 +66,26 @@
     }, [route.params.email, selectedMonth, selectedYear]);
 
     const chartData = {
-      // We filter the labels to only include the 1st, 10th, 20th, and 30th days
-      labels: expenseData.map((_, index) => index + 1).filter(day => [1, 10, 20, 30].includes(day)),
+      labels: Array.from({ length: 30 }, (_, i) => i + 1)
+      .filter(label => label === 1 || label % 5 === 0), // Only include days 1, 5, 10, ... 
       datasets: [
         {
-          data: expenseData,
-          color: (opacity = 1) => `rgba(255, 0, 0, ${opacity})`,
-          strokeWidth: 2,
-          label: 'Expenses',
-          // Add the below property to make it a continuous line
-          bezier: true,
+          data: expenseData.slice(0, 30), 
+          color: () => `rgba(255, 0, 0, 1)`, 
+          strokeWidth: 7,
+          fillShadowGradient: 'rgba(255, 0, 0, 0.5)', 
+          fillShadowGradientOpacity: 1,
         },
         {
-          data: incomeData, // Make sure you process incomeData the same way as expenseData
-          color: (opacity = 1) => `rgba(0, 255, 0, ${opacity})`,
-          strokeWidth: 2,
-          label: 'Income',
-          bezier: true,
+          data: incomeData.slice(0, 30), 
+          color: () => `rgba(0, 255, 0, 1)`, 
+          strokeWidth: 7, 
+          fillShadowGradient: 'rgba(0, 255, 0, 0.5)', 
+          fillShadowGradientOpacity: 1,
         }
       ]
     };
+
 
     const renderDatePickers = () => {
       return (
@@ -104,8 +102,7 @@
             selectedValue={selectedYear}
             style={styles.picker}
             onValueChange={(itemValue) => setSelectedYear(itemValue)}>
-            {/* Example year range: 2020-2023 */}
-            {Array.from({ length: 4 }).map((_, index) => (
+            {Array.from({ length: 6 }).map((_, index) => (
               <Picker.Item key={2023 - index} label={`${2023 - index}`} value={2023 - index} />
             ))}
           </Picker>
@@ -115,22 +112,35 @@
   
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Financial Chart</Text>
+      <Text style={styles.header}>Monthly Summary</Text>
       {renderDatePickers()}
-      <ScrollView style={styles.chartContainer}>
+      <ScrollView style={[styles.chartContainer]}>
         {(expenseData.length > 0 || incomeData.length > 0) ? (
           <Chart
             data={chartData}
             width={350}
             height={220}
             chartConfig={{
-              backgroundColor: '#1D3557',
-              backgroundGradientFrom: '#1D3557',
-              backgroundGradientTo: '#075985',
-              decimalPlaces: 2,
-              color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-              labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-            }}
+              backgroundColor: '#ffffff',
+              backgroundGradientFrom: '#ffffff',
+              backgroundGradientTo: '#ffffff',
+              decimalPlaces: 0,
+              color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`, 
+              labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`, 
+              style: {
+                borderRadius: 16,
+                marginVertical: 8,
+              },
+              formatXLabel: (label, index) => {
+                return (index === 0 || (index + 1) % 5 === 0) ? label : '';
+              },
+              propsForDots: {
+                r: '0', 
+              },
+              withInnerLines: false, 
+              withOuterLines: false, 
+              withDots: false, 
+            }}            
             style={{
               marginVertical: 8,
               borderRadius: 16,
@@ -140,11 +150,25 @@
           <Text>No financial data available.</Text>
         )}
       </ScrollView>
+      <Button
+      title="Back to Dashboard"
+      onPress={() => navigation.navigate('Dashboard', { email: route.params.email }) }
+      color="#075985"
+      style={styles.backButton}
+    />
     </View>
   );
 };
 
 const styles = StyleSheet.create({
+  backButton: {
+    alignSelf: 'center',
+    backgroundColor: '#075985',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 30, // This creates an oval shape
+    marginVertical: 20,
+  },
   container: {
     flex: 1,
     paddingHorizontal: 15,
@@ -165,7 +189,8 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   chartContainer: {
-    marginBottom: 20,
+    marginBottom: 0
+    ,
   },
 });
 

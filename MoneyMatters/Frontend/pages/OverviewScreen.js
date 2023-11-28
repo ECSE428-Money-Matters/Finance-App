@@ -54,6 +54,10 @@ const OverviewScreen = ({navigation, route}) => {
         }]
     });
 
+    const navigateToLineChart = () => {
+        navigation.navigate('LineChart', { email: route.params.email });
+    };
+
     // Additional state for Pie Chart data
     const [pieChartData, setPieChartData] = useState([]);
 
@@ -220,6 +224,9 @@ const OverviewScreen = ({navigation, route}) => {
                         </FilterPopUp.Container>
                     </FilterPopUp>
                 </View>
+                <TouchableOpacity style={styles.largeButton} onPress={navigateToLineChart}>
+                    <Text style={styles.largeButtonText}>Monthly Summary</Text>
+                </TouchableOpacity>
             </View>
         )
     }
@@ -268,7 +275,28 @@ const styles = StyleSheet.create({
         paddingHorizontal: 15,
         // paddingVertical: 75,
         paddingTop: 75,
-        paddingBottom: 25,
+        paddingBottom: 50,
+    },
+    largeButton: {
+        zIndex: 1,
+        height: 50,
+        justifyContent: "center",
+        alignItems: "center",
+        borderRadius: 25,
+        backgroundColor: "#075985",
+        paddingHorizontal: 30,
+        alignSelf: 'center',
+        position: 'absolute', // Position button absolutely
+        top: 615, // Distance from bottom
+        left: '10%', // Left position
+        right: '10%', // Right position, ensures the button is centered
+        width: '80%', // Button width
+        width: '80%', // Button width
+    },
+    largeButtonText: {
+        fontSize: 18,
+        fontWeight: '500',
+        color: '#fff',
     },
     label: {
         fontSize: 16,
