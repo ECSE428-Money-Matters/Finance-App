@@ -58,7 +58,7 @@ const ExpenseScreen = ({navigation, route}) => {
         try {
             //setExpenses([...expenses, newExpense]);
             if (value === 'All'){
-                const response = await fetch(`http://10.0.0.249:3000/view_expense?email=${route.params.email}`, {
+                const response = await fetch(`http://10.0.0.124:3000/view_expense?email=${route.params.email}`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json'
@@ -68,7 +68,7 @@ const ExpenseScreen = ({navigation, route}) => {
                 const message = JSON.parse(responseBody); // Parse the JSON response
                 setExpenses(message);
             }else{
-                const response = await fetch(`http://10.0.0.249:3000/view_expense?email=${route.params.email}&category=${value}`, {
+                const response = await fetch(`http://10.0.0.124:3000/view_expense?email=${route.params.email}&category=${value}`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json'

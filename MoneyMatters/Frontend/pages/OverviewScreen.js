@@ -56,6 +56,8 @@ const OverviewScreen = ({navigation, route}) => {
 
     // Additional state for Pie Chart data
     const [pieChartData, setPieChartData] = useState([]);
+    const [showAbsoluteValues, setShowAbsoluteValues] = useState(false);
+    const [showGraphValues, setShowGraphValues] = useState(false);
 
     const [isModalVisible, setIsModalVisible] = React.useState(false);
     const chartConfig = {
@@ -79,8 +81,22 @@ const OverviewScreen = ({navigation, route}) => {
         }
 
     };
+    const pieChartConfig = {
+        backgroundGradientFrom: "#1E2923",
+        backgroundGradientFromOpacity: 0,
+        backgroundGradientTo: "#08130D",
+        backgroundGradientToOpacity: 0.5,
+        color: (opacity = 1) => `rgba(26, 255, 146, ${opacity})`,
+        strokeWidth: 2,
+        barPercentage: 0.5,
+        useShadowColorFromDataset: false ,
+        decimalPlaces: 2,
+        formatYLabel: formatYLabel,
+    };
     const screenWidth = Dimensions.get("window").width;
-    // const handleModal = () => setIsModalVisible(() => !isModalVisible);
+    const formatYLabel = (y) => {
+        return showAbsoluteValues ? `${y}$` : y;
+    };
     const handleModal = () => {
         if(value === 'Expenses'){
             setFilterLabel('Expenses');
@@ -99,6 +115,7 @@ const OverviewScreen = ({navigation, route}) => {
         }
     }
 
+
     useFocusEffect(
         React.useCallback(() => {
             // This will run when the component gains focus
@@ -112,73 +129,58 @@ const OverviewScreen = ({navigation, route}) => {
     }
     const handleViewExpense = async () => {
         try {
-            if (value === 'Expenses'){
-                console.log("expense graph")
-                const labelsExpense = [];
-                const datasetExpense = [];
+            const labels = [];
+            const dataset = [];
+            const pieData = [];
+            const categories = value === 'Expenses' ? expenseCategories : incomeCategories;
+            const endpoint = value === 'Expenses' ? '/view_expense' : '/incomes';
+            const baseUrl = `http://10.0.0.124:3000`;
 
-                for (const category of expenseCategories) {
-                    const response = await fetch(`http://127.0.0.1:3000/view_expense?email=${route.params.email}&category=${category.value}`, {
-                        method: 'GET',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                    });
-                    const responseBody = await response.text();
-                    const message = JSON.parse(responseBody);
+            for (const category of categories) {
+                const url = value === 'Expenses' ? `${baseUrl}${endpoint}?email=${route.params.email}&category=${category.value}`:
+                    `${baseUrl}${endpoint}?email=${route.params.email}&column_name=${"None"}&category=${category.value}`;
 
-                    const totalAmount = message.reduce((total, item) => total + parseFloat(item.amount), 0);
-
-                    labelsExpense.push(category.label);
-                    datasetExpense.push(totalAmount);
-                }
-                setGraphData({
-                    labels: labelsExpense,
-                    datasets: [{
-                        data: datasetExpense
-                    }]
-                });
-                // setExpenses(message);
-            }else{
-                console.log("income graph")
-                const labelsIncome = [];
-                const datasetIncome = [];
-
-                for (const category of incomeCategories) {
-                    console.log(category.label)
-                    const response = await fetch(`http://127.0.0.1:3000/incomes?email=${route.params.email}&column_name=${"None"}&category=${category.value}`, {
-                        method: 'GET',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                    });
-                    const responseBody = await response.text();
-                    const message = JSON.parse(responseBody);
-
-                    console.log("message: " + JSON.stringify(message));
-
-
-                    const totalAmount = message.reduce((total, item) => total + parseFloat(item.amount), 0);
-
-                    labelsIncome.push(category.label);
-                    datasetIncome.push(totalAmount);
-                }
-
-
-                setGraphData({
-                    labels: labelsIncome,
-                    datasets: [{
-                        data: datasetIncome
-                    }]
+                const response = await fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
                 });
 
+                const responseBody = await response.text();
+                const message = JSON.parse(responseBody);
+                const totalAmount = message.reduce((total, item) => total + parseFloat(item.amount), 0);
 
+                // Update data for Bar Chart
+                labels.push(category.label);
+                dataset.push(totalAmount);
+
+                const color = categoryColors[category.label] || '#999999';
+
+                // Update data for Pie Chart
+                pieData.push({
+                    name: category.label,
+                    amount: totalAmount,
+                    value: `${totalAmount}$`,
+                    color: color,
+                    legendFontColor: '#606060',
+                    legendFontSize: 12
+                });
             }
+
+            // Set data for Bar Chart
+            setGraphData({
+                labels: labels,
+                datasets: [{ data: dataset }]
+            });
+
+            // Set data for Pie Chart
+            setPieChartData(pieData);
         } catch (error) {
-            console.error("Error adding expense:", error);
-            alert(error);
+            console.error("Error fetching data:", error);
         }
     };
+
 
     function renderHeader() {
         return (
@@ -226,30 +228,48 @@ const OverviewScreen = ({navigation, route}) => {
 
     function renderExpenses() {
         const isBarChart = iconName === 'pie-chart-outline';
+
         return (
             <ScrollView>
                 {isBarChart ? (
-                    <BarChart
-                        style={styles.graphStyle}
-                        data={graphData}
-                        width={screenWidth}
-                        height={250}
-                        chartConfig={chartConfig}
-                        verticalLabelRotation={90}
-                    />
+                    <TouchableOpacity onPress={()=>setShowGraphValues(!showGraphValues)}>
+                        <BarChart
+                            style={styles.graphStyle}
+                            data={graphData}
+                            width={screenWidth}
+                            height={250}
+                            chartConfig={chartConfig}
+                            verticalLabelRotation={90}
+                            withVerticalLabels = {true}
+                            fromZero={true}
+                            showValuesOnTopOfBars={showGraphValues}
+                        />
+                        </TouchableOpacity>
                 ) : (
-                    <PieChart
-                        data={pieChartData}
-                        width={screenWidth}
-                        height={200}
-                        chartConfig={chartConfig}
-                        accessor={"amount"}
-                        backgroundColor={"transparent"}
-                        paddingLeft={"0"}
-                        center={[0, 0]}
-                        absolute
-                    />
+                    <TouchableOpacity
+                        style={styles.pieChart}
+                        onPress={() => setShowAbsoluteValues(!showAbsoluteValues)}
+                    >
+                        <PieChart
+                            data={pieChartData}
+                            width={screenWidth - 10}
+                            height={200}
+                            chartConfig={{
+                                ...pieChartConfig,
+                                formatYLabel: formatYLabel,
+                            }}
+                            accessor={"amount"}
+                            backgroundColor={"transparent"}
+                            paddingLeft={"-20"}
+                            center={[15, 5]}
+                            absolute={showAbsoluteValues}
+                        />
+
+                    </TouchableOpacity>
+
                 )}
+
+
             </ScrollView>
         );
     }
@@ -261,6 +281,8 @@ const OverviewScreen = ({navigation, route}) => {
         </View>
     );
 };
+
+
 
 const styles = StyleSheet.create({
     container: {
@@ -336,7 +358,28 @@ const styles = StyleSheet.create({
     }, graphStyle: {
         marginLeft: -15,
         marginTop: 20
+    },
+    pieChart:{
+        borderRadius: 30,
+        borderColor: "#7F7F7F",
+        backgroundColor: "#ffffff",
+        elevation: 0,
+        marginBottom: 5,
+        marginTop: 5,
+        borderWidth: 1,
     }
 });
+
+const categoryColors = {
+    'Housing': '#FF6384',
+    'Transportation': '#36A2EB',
+    'Food & Dining': '#FFCE56',
+    'Entertainment': '#4BC0C0',
+    'Health': '#9966FF',
+    'Other': '#b85d00',
+    'Salary': '#00a615',
+    'Freelance Work': '#001e98',
+    'Investment': '#b40000'
+};
 
 export default OverviewScreen;
