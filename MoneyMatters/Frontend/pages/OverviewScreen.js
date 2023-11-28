@@ -241,11 +241,8 @@ const OverviewScreen = ({ navigation, route }) => {
             </FilterPopUp.Container>
           </FilterPopUp>
         </View>
-        <TouchableOpacity
-          style={styles.largeButton}
-          onPress={navigateToLineChart}
-        >
-          <Text style={styles.largeButtonText}>Monthly Summary</Text>
+        <TouchableOpacity style={styles.button} onPress={navigateToLineChart}>
+          <Text style={styles.largeButtonText}>Line Plot</Text>
         </TouchableOpacity>
       </View>
     );
