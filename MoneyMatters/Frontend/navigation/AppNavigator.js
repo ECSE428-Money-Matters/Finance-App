@@ -10,6 +10,7 @@ import Dashboard from "../pages/Dashboard";
 import createExpensePage from "../pages/CreateExpensePage";
 import Dash from "../pages/Dash";
 import createIncomePage from "../pages/CreateIncomePage";
+import LineChart from "../pages/LineChart";
 
 const Stack = createStackNavigator();
 
@@ -48,7 +49,7 @@ const AppNavigator = () => {
       />
       <Stack.Screen
         name="Dashboard"
-        component={Dashboard}
+        component={Dash}
         options={{ headerShown: false }}
       />
       <Stack.Screen
@@ -59,6 +60,11 @@ const AppNavigator = () => {
       <Stack.Screen
         name="CreateIncome"
         component={createIncomePage}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="LineChart"
+        component={LineChart}
         options={{ headerShown: false }}
       />
     </Stack.Navigator>

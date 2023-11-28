@@ -1,21 +1,21 @@
-import React, { useState } from 'react';
-import { View, StyleSheet, TextInput, Button, Text } from 'react-native';
+import React, { useState } from "react";
+import { View, StyleSheet, TextInput, Button, Text } from "react-native";
 
-const SignInPage = ({ navigation }) => {  
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+const SignInPage = ({ navigation }) => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
   const handleSignIn = async () => {
     try {
-      const response = await fetch('http://10.0.0.124:3000/login', {
-        method: 'POST',
+      const response = await fetch("http://192.168.0.104:3000/login", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json'
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           email: email,
-          password: password
-        })
+          password: password,
+        }),
       });
 
       const responseBody = await response.text();
@@ -23,10 +23,10 @@ const SignInPage = ({ navigation }) => {
 
       if (message === "Login successful") {
         // handle successful login, e.g., navigate to a dashboard
-        navigation.navigate('Dashboard', { email: email });
+        navigation.navigate("Dashboard", { email: email });
       } else {
         // handle unsuccessful login, e.g., display an error message
-        alert(message);  
+        alert(message);
       }
     } catch (error) {
       // handle error, e.g., network error or server error
@@ -34,30 +34,30 @@ const SignInPage = ({ navigation }) => {
       alert("Failed to connect to the server.");
     }
   };
-  
-  const handleSignUpRedirect = () => {   
-    navigation.navigate('SignUp');
+
+  const handleSignUpRedirect = () => {
+    navigation.navigate("SignUp");
   };
 
   const handlePasswordRecoveryRedirect = () => {
-    navigation.navigate('PasswordRecovery');
+    navigation.navigate("PasswordRecovery");
   };
 
   return (
     <View style={styles.container}>
       <Text style={styles.label}>Email:</Text>
-      <TextInput 
-        style={styles.input} 
+      <TextInput
+        style={styles.input}
         value={email}
         onChangeText={setEmail}
         placeholder="Enter your email"
         keyboardType="email-address"
         autoCapitalize="none"
       />
-      
+
       <Text style={styles.label}>Password:</Text>
-      <TextInput 
-        style={styles.input} 
+      <TextInput
+        style={styles.input}
         value={password}
         onChangeText={setPassword}
         placeholder="Enter your password"
@@ -66,12 +66,13 @@ const SignInPage = ({ navigation }) => {
 
       <Button title="Sign In" onPress={handleSignIn} />
 
-      <Text style={styles.linkText} onPress={handleSignUpRedirect}>Don't have an account? Sign Up</Text>
+      <Text style={styles.linkText} onPress={handleSignUpRedirect}>
+        Don't have an account? Sign Up
+      </Text>
 
       <Text style={styles.linkText} onPress={handlePasswordRecoveryRedirect}>
         Forgot Password?
       </Text>
-      
     </View>
   );
 };
@@ -79,7 +80,7 @@ const SignInPage = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: "center",
     paddingHorizontal: 15,
   },
   label: {
@@ -88,16 +89,17 @@ const styles = StyleSheet.create({
   },
   input: {
     borderWidth: 1,
-    borderColor: '#ccc',
+    borderColor: "#ccc",
     padding: 8,
     marginBottom: 15,
     borderRadius: 5,
   },
-  linkText: {   // <-- New style for "Sign Up" link
-    color: 'blue',
-    textAlign: 'center',
+  linkText: {
+    // <-- New style for "Sign Up" link
+    color: "blue",
+    textAlign: "center",
     marginTop: 10,
-    textDecorationLine: 'underline',
+    textDecorationLine: "underline",
   },
 });
 

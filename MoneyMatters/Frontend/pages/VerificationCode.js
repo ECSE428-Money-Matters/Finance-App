@@ -1,21 +1,21 @@
-import React, { useState } from 'react';
-import { View, StyleSheet, TextInput, Button, Text } from 'react-native';
+import React, { useState } from "react";
+import { View, StyleSheet, TextInput, Button, Text } from "react-native";
 
 const Verification = ({ navigation, route }) => {
-  const [code, setCode] = useState('');
+  const [code, setCode] = useState("");
   const { email } = route.params;
 
   const handleCode = async () => {
     try {
-      const response = await fetch('http://10.0.0.124:3000/verify', {
-        method: 'POST',
+      const response = await fetch("http://192.168.0.104:3000/verify", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json'
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           email: email,
-          code: code
-        })
+          code: code,
+        }),
       });
 
       const responseBody = await response.text();
@@ -23,10 +23,10 @@ const Verification = ({ navigation, route }) => {
 
       if (message.message === "Account created successfully!") {
         // handle successful login, e.g., navigate to a dashboard
-        navigation.navigate('Dashboard', { email: email });
+        navigation.navigate("Dashboard", { email: email });
       } else {
         // handle unsuccessful login, e.g., display an error message
-        alert(message);  
+        alert(message);
       }
     } catch (error) {
       // handle error, e.g., network error or server error
@@ -34,20 +34,20 @@ const Verification = ({ navigation, route }) => {
       alert("Failed to connect to the server.");
     }
   };
-  
-  const handleSignUpRedirect = () => {   
-    navigation.navigate('SignUp');
+
+  const handleSignUpRedirect = () => {
+    navigation.navigate("SignUp");
   };
 
   const handlePasswordRecoveryRedirect = () => {
-    navigation.navigate('PasswordRecovery');
+    navigation.navigate("PasswordRecovery");
   };
 
   return (
     <View style={styles.container}>
       <Text style={styles.label}>Code:</Text>
-      <TextInput 
-        style={styles.input} 
+      <TextInput
+        style={styles.input}
         value={code}
         onChangeText={setCode}
         placeholder="Enter your code"
@@ -56,14 +56,15 @@ const Verification = ({ navigation, route }) => {
 
       <Button title="Verify" onPress={handleCode} />
 
-      <Text style={styles.linkText} onPress={handleSignUpRedirect}>   {/* <-- New "Sign Up" link */}
+      <Text style={styles.linkText} onPress={handleSignUpRedirect}>
+        {" "}
+        {/* <-- New "Sign Up" link */}
         Don't have an account? Sign Up
       </Text>
 
       <Text style={styles.linkText} onPress={handlePasswordRecoveryRedirect}>
         Forgot Password?
       </Text>
-      
     </View>
   );
 };
@@ -71,7 +72,7 @@ const Verification = ({ navigation, route }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: "center",
     paddingHorizontal: 15,
   },
   label: {
@@ -80,16 +81,17 @@ const styles = StyleSheet.create({
   },
   input: {
     borderWidth: 1,
-    borderColor: '#ccc',
+    borderColor: "#ccc",
     padding: 8,
     marginBottom: 15,
     borderRadius: 5,
   },
-  linkText: {   // <-- New style for "Sign Up" link
-    color: 'blue',
-    textAlign: 'center',
+  linkText: {
+    // <-- New style for "Sign Up" link
+    color: "blue",
+    textAlign: "center",
     marginTop: 10,
-    textDecorationLine: 'underline',
+    textDecorationLine: "underline",
   },
 });
 
